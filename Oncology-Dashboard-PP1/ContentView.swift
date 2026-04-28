@@ -8,14 +8,20 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var selection: String? = "Patients"
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Oncology Dashboard")
-        }
-        .padding()
+        NavigationSplitView {
+            List(selection: $selection) {
+                NavigationLink("Patients", value: "Patients")
+            }.listStyle(.sidebar)
+        } detail: {
+            if selection == "Patients" {
+                PatientView()
+            } else {
+                Text("Select an option")
+            }
+        }.navigationSplitViewStyle(.prominentDetail)
     }
 }
 

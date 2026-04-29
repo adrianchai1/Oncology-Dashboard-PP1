@@ -48,13 +48,27 @@ struct TimelineCycle: View {
                     ForEach(sortedEvents.indices, id: \.self) { index in
                         let event = sortedEvents[index]
                         let yValue = CGFloat((index % 2 == 0) ? 3 : 1)
-                        TimelineEventView(timelineEvent: event)
-                            .position(
-                                x: geometry.size.width * getXPosition(eventDate: event.date),
-                                y: (yValue == 1)
-                                ? geometry.size.height * 0.15
-                                : geometry.size.height * 0.85
-                            )
+                        // Stack for the timeline event and the line
+                        VStack {
+                            // If the event is above the timeline, order the event before the rectangle
+                            if yValue == 1 {
+                                TimelineEventView(timelineEvent: event)
+                            }
+                            Rectangle()
+                                .fill(event.getColor)
+                                .frame(width: 2, height: 50)
+                            
+                            // Otherwise order the rectangle before the event.
+                            if yValue != 1 {
+                                TimelineEventView(timelineEvent: event)
+                            }
+                        }
+                        .position(
+                            x: geometry.size.width * getXPosition(eventDate: event.date),
+                            y: (yValue == 1)
+                            ? geometry.size.height * 0.15
+                            : geometry.size.height * 0.85
+                        )
                     }
                 }
             }

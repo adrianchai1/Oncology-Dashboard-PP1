@@ -1,0 +1,84 @@
+//
+//  TimelineCycle.swift
+//  Oncology-Dashboard-PP1
+//
+//  Created by Jonathan Dummett on 29/4/2026.
+//
+
+import SwiftUI
+
+struct TimelineCycle: View {
+    
+    let cycleNumber: Int = 1
+    let cycleStartDate: Date = Date()
+    let cycleEndDate: Date = Calendar.current.date(byAdding: .day, value: 14, to: Date()) ?? Date()
+    
+    @State private var timelineEvents: [TimelineEvent] = []
+    
+    
+    func formatDate(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        return dateFormatter.string(from: date)
+    }
+    
+    
+    
+    func getXPosition(eventDate: Date) -> CGFloat {
+        let components = Calendar.current.dateComponents([.day], from: cycleStartDate, to: eventDate)
+        let dayDifference = components.day ?? 0
+        
+        return CGFloat(dayDifference) / 14
+    }
+    
+    var body: some View {
+        VStack() {
+            HStack() {
+                Text("Cycle \(cycleNumber)")
+                Spacer()
+                Text("\(formatDate(date: cycleStartDate)) - \(formatDate(date: cycleEndDate))")
+                    .foregroundStyle(Color.gray)
+                    .font(.system(size: 15, weight: .light, design: .default))
+            }
+            
+            // Timeline Events layed out based on how far along in the week it is
+            GeometryReader { geometry in
+                ZStack {
+                    let sortedEvents = timelineEvents.sorted { $0.date < $1.date }
+                    ForEach(sortedEvents.indices, id: \.self) { index in
+                        let event = sortedEvents[index]
+                        let yValue = CGFloat((index % 2 == 0) ? 3 : 1)
+                        TimelineEventView(timelineEvent: event)
+                            .position(
+                                x: geometry.size.width * getXPosition(eventDate: event.date),
+                                y: (yValue == 1)
+                                ? geometry.size.height * 0.15
+                                : geometry.size.height * 0.85
+                            )
+                    }
+                }
+            }
+            .padding(.horizontal, 5)
+            Spacer()
+        }
+        .padding(20)
+        .frame(width: 300, height: 300)
+        .background(Color.gray.opacity(0.15))
+        .cornerRadius(20)
+        
+        .onAppear {
+            timelineEvents = [
+                getTestTimelineEvent(startDate: cycleStartDate, forceDate: cycleStartDate),
+                getTestTimelineEvent(startDate: cycleStartDate),
+                getTestTimelineEvent(startDate: cycleStartDate),
+                getTestTimelineEvent(startDate: cycleStartDate, forceDate: cycleEndDate)
+            ]
+        }
+        
+        
+    }
+}
+
+#Preview {
+    TimelineCycle()
+}

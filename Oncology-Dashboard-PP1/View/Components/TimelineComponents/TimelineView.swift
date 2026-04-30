@@ -13,11 +13,9 @@ struct TimelineView: View {
             ZStack(alignment: .leading) {
                 // All of the timeline Cycles
                 LazyHStack {
-                    TimelineCycle()
-                    TimelineCycle()
-                    TimelineCycle()
-                    TimelineCycle()
-                    TimelineCycle()
+                    ForEach(0..<5) { i in
+                        TimelineCycle()
+                    }
                 }
                 
                 // Timeline heatmap bar

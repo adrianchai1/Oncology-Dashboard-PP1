@@ -8,12 +8,14 @@
 import Foundation
 import SwiftUI
 
+// TODO: Need to add cases for blood pressure, sleep etc. Things doctors could flag as a problem and put it on the timeline view.
 enum EventID: Codable, CaseIterable {
     case chemotherapy
     case appointment
     case emergency
     case other
 }
+
 
 struct TimelineEvent: Identifiable, Codable {
     var id: UUID = UUID()

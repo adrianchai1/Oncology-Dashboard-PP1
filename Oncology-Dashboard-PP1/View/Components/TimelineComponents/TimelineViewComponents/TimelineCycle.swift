@@ -66,8 +66,8 @@ struct TimelineCycle: View {
                         .position(
                             x: geometry.size.width * getXPosition(eventDate: event.date),
                             y: (yValue == 1)
-                            ? geometry.size.height * 0.15
-                            : geometry.size.height * 0.85
+                            ? geometry.size.height * 0.20
+                            : geometry.size.height * 0.80
                         )
                     }
                 }
@@ -77,7 +77,7 @@ struct TimelineCycle: View {
         }
         .padding(20)
         .frame(width: 300, height: 300)
-        .background(Color.gray.opacity(0.15))
+        .background(Color(white: 0.95))
         .cornerRadius(20)
         
         .onAppear {

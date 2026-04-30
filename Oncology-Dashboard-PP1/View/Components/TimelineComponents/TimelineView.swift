@@ -10,12 +10,20 @@ import SwiftUI
 struct TimelineView: View {
     var body: some View {
         ScrollView(.horizontal) {
-            LazyHStack {
-                TimelineCycle()
-                TimelineCycle()
-                TimelineCycle()
-                TimelineCycle()
-                TimelineCycle()
+            ZStack(alignment: .leading) {
+                // All of the timeline Cycles
+                LazyHStack {
+                    TimelineCycle()
+                    TimelineCycle()
+                    TimelineCycle()
+                    TimelineCycle()
+                    TimelineCycle()
+                }
+                
+                // Timeline heatmap bar
+                TimelineBar()
+                    .padding(.horizontal, 10)
+                    .padding(.top, 20)
             }
         }
     }

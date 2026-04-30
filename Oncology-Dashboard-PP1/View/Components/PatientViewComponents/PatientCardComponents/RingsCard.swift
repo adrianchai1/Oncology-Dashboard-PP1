@@ -18,9 +18,9 @@ struct RingsCard: View {
             RingStack(title: "Physiological", percentage: physiologicalPercentage, stackColour: .red)
             RingStack(title: "Activity", percentage: activityPercentage, stackColour: .teal)
             RingStack(title: "Patient Reported", percentage: patientReportedPercentage, stackColour: .orange)
-        }.padding().background {
-            RoundedRectangle(cornerRadius: 15).fill(.clear).background(.ultraThinMaterial)
-        }
+        }.padding().background() {
+            RoundedRectangle(cornerRadius: 12).fill(.ultraThinMaterial)
+        }.clipShape(RoundedRectangle(cornerRadius: 12)).padding()
     }
 }
 

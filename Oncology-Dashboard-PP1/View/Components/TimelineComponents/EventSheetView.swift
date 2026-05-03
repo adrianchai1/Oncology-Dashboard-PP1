@@ -30,7 +30,7 @@ struct EventSheetView: View {
                 case EventID.other:
                     OtherDescription(title: event.title ?? "")
                 }
-            }.navigationTitle(event.getTitle).navigationBarTitleDisplayMode(.inline).toolbar {
+            }.navigationTitle(event.eventId.title).navigationBarTitleDisplayMode(.inline).toolbar {
                 ToolbarItem {
                     Button() {
                         dismiss()

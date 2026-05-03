@@ -64,7 +64,7 @@ struct TimelineCycle: View {
                                     TimelineEventView(timelineEvent: event)
                                 }
                                 Rectangle()
-                                    .fill(event.getColor)
+                                    .fill(event.eventId.color)
                                     .frame(width: 2, height: 50)
                                 
                                 // Otherwise order the rectangle before the event.

@@ -14,9 +14,9 @@ struct TimelineEventView: View {
         ZStack {
             Circle()
                 .frame(width: 35, height: 35)
-                .foregroundColor(timelineEvent.getColor)
+                .foregroundColor(timelineEvent.eventId.color)
             
-            Image(systemName: "\(timelineEvent.getIcon)")
+            Image(systemName: "\(timelineEvent.eventId.icon)")
                 .font(.system(size: 15, weight: .bold))
         }
     }

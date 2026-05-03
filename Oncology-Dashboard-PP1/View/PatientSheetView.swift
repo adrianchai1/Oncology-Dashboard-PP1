@@ -18,7 +18,12 @@ struct PatientSheetView: View {
         NavigationStack {
             ScrollView(.vertical) {
                 VStack {
-                    TimelineView(timelineCycleCount: patient.cycleCount, patientStartDate: patient.treatmentStartDate, selectedCycle: $selectedCycle).padding(EdgeInsets(top: 20, leading: 10, bottom: 20, trailing: 10))
+                    HStack {
+                        Spacer()
+                        TimelineLegend()
+                    }
+                    .padding(EdgeInsets(top: 30, leading: 10, bottom: 0, trailing: 10))
+                    TimelineView(timelineCycleCount: patient.cycleCount, patientStartDate: patient.treatmentStartDate, selectedCycle: $selectedCycle).padding(EdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10))
                     Text("Significant Deviations from Baseline").font(Font.title.bold())
                 }.navigationTitle(patient.patientName).navigationBarTitleDisplayMode(.inline).toolbar {
                     ToolbarItem(placement: .topBarTrailing) {

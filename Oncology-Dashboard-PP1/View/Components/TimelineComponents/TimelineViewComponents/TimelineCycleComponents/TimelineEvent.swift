@@ -14,6 +14,34 @@ enum EventID: Codable, CaseIterable {
     case appointment
     case emergency
     case other
+    
+    
+    var title: String {
+        switch self {
+        case .chemotherapy: return "Chemotherapy"
+        case .appointment: return "Appointment"
+        case .emergency: return "Emergency"
+        case .other: return "Other"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .chemotherapy: return "pills"
+        case .appointment: return "calendar"
+        case .emergency: return "heart"
+        case .other: return "questionmark"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .chemotherapy: return .green.opacity(0.5)
+        case .appointment: return .blue.opacity(0.5)
+        case .emergency: return .red.opacity(0.5)
+        case .other: return .gray.opacity(0.5)
+        }
+    }
 }
 
 
@@ -25,47 +53,9 @@ struct TimelineEvent: Identifiable, Codable {
     var doctorId: UUID = UUID()
     var title: String?
     
-    var getTitle: String {
-       if title != nil {
-            return title!
-        }
-        
-        switch eventId {
-        case .chemotherapy:
-            return "Chemotherapy"
-        case .appointment:
-            return "Appointment"
-        case .emergency:
-            return "Emergency"
-        case .other:
-            return "Other"
-        }
-    }
     
-    var getIcon: String {
-        switch eventId {
-        case .chemotherapy:
-            return "pills"
-        case .appointment:
-            return "calendar"
-        case .emergency:
-            return "heart"
-        case .other:
-            return "questionmark"
-        }
-    }
-    
-    var getColor: Color {
-        switch eventId {
-        case .chemotherapy:
-            return .green.opacity(0.5)
-        case .appointment:
-            return .blue.opacity(0.5)
-        case .emergency:
-            return .red.opacity(0.5)
-        case .other:
-            return .gray.opacity(0.5)
-        }
+    var displayTitle: String {
+        title ?? eventId.title
     }
 }
 

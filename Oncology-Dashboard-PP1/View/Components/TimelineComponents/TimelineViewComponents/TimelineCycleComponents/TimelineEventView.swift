@@ -13,7 +13,7 @@ struct TimelineEventView: View {
     var body: some View {
         ZStack {
             Circle()
-                .frame(width: 30, height: 30)
+                .frame(width: 35, height: 35)
                 .foregroundColor(timelineEvent.getColor)
             
             Image(systemName: "\(timelineEvent.getIcon)")

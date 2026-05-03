@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+let patientsDB: [Patient] = [
+    TinaDinh,
+]

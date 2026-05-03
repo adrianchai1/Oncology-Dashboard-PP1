@@ -18,12 +18,12 @@ struct PatientCard: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                VStack {
+                VStack(alignment: .leading) {
                     Text(patientName).font(.title).fontWeight(.bold)
                     Text("Cycle \(cycleNumber)").font(.title2).fontWeight(.semibold).foregroundStyle(Color(.red))
                 }
                 Spacer()
-                VStack {
+                VStack(alignment: .trailing) {
                     Text("UR Number:")
                     Text(URNumber)
                 }

@@ -6,3 +6,12 @@
 //
 
 import Foundation
+
+@Observable
+class PatientsViewViewModel {
+    var patients: [Patient]
+    
+    init(patients: [Patient]) {
+        self.patients = patients
+    }
+}

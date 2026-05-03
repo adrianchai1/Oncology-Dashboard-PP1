@@ -13,12 +13,12 @@ struct RingsCard: View {
     let activityPercentage: Double
     let patientReportedPercentage: Double
     var body: some View {
-        HStack {
+        HStack(alignment: .top, spacing: 16) {
             RingStack(title: "Sleep", percentage: sleepPercentage, stackColour: .purple)
             RingStack(title: "Physiological", percentage: physiologicalPercentage, stackColour: .red)
             RingStack(title: "Activity", percentage: activityPercentage, stackColour: .teal)
-            RingStack(title: "Patient Reported", percentage: patientReportedPercentage, stackColour: .orange)
-        }.padding().background() {
+            RingStack(title: "Patient\nReported", percentage: patientReportedPercentage, stackColour: .orange)
+        }.padding().frame(maxWidth: .infinity).background() {
             RoundedRectangle(cornerRadius: 12).fill(.ultraThinMaterial)
         }.clipShape(RoundedRectangle(cornerRadius: 12)).padding()
     }

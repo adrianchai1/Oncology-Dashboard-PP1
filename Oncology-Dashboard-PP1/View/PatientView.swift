@@ -10,17 +10,25 @@ import SwiftUI
 struct PatientView: View {
     // this should be pulled from the VM, will do during next refactor
     
-    let cols = [GridItem(.adaptive(minimum: 400))]
+    let cols = [GridItem(.flexible(),spacing: 5), GridItem(.flexible(),spacing: 5)]
     
+    @State private var vm = PatientsViewViewModel(patients: patientsDB)
     @State private var selection: String = "High"
+    @State private var selectedPatient: Patient?
+    
     let priorities = ["High", "Medium", "Low"]
     var body: some View {
         ScrollView {
             LazyVGrid(columns: cols) {
-                ForEach(0..<100) { i in
-                    PatientCard(patientName: "Tina Dinh", cycleNumber: 4, URNumber: "1003456", sleepPercentage: 34, physiologicalPercentage: 55, activityPercentage: 73, patientReportedPercentage: 42)
+                ForEach(vm.patients) { patient in
+                    PatientCard(patientName: patient.patientName, cycleNumber: patient.cycleCount, URNumber: patient.URN, sleepPercentage: patient.sleepPercentage, physiologicalPercentage: patient.physiologicalPercentage, activityPercentage: patient.activityPercentage, patientReportedPercentage: patient.patientReportedPercentage)
+                        .onTapGesture {
+                            selectedPatient = patient
+                    }
                 }
             }
+        }.fullScreenCover(item: $selectedPatient) { selected in
+            PatientSheetView(patient: selected)
         }.toolbar {
             ToolbarItem(placement: .principal) {
                 Picker("Priority", selection: $selection) {

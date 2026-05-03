@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct Cycle {
+    let cycleNumber: Int
+    let significantDeviations: [String]
+    let minorDeviations: [String]
+}

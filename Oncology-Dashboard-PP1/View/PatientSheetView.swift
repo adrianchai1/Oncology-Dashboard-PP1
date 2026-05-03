@@ -8,11 +8,32 @@
 import SwiftUI
 
 struct PatientSheetView: View {
+    
+    let patient: Patient
+    
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedCycle = 0
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            ScrollView(.vertical) {
+                VStack {
+                    TimelineView(timelineCycleCount: patient.cycleCount, patientStartDate: patient.treatmentStartDate, selectedCycle: $selectedCycle).padding(EdgeInsets(top: 20, leading: 10, bottom: 20, trailing: 10))
+                    Text("Significant Deviations from Baseline").font(Font.title.bold())
+                }.navigationTitle(patient.patientName).navigationBarTitleDisplayMode(.inline).toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button() {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }.buttonStyle(.borderedProminent).tint(Color(.nhBlue))
+                    }
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    PatientSheetView()
+    PatientSheetView(patient: TinaDinh)
 }

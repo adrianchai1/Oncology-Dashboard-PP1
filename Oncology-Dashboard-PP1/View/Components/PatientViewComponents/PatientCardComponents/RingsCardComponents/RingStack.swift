@@ -13,12 +13,12 @@ struct RingStack: View {
     let stackColour: Color
     var body: some View {
         VStack {
-            Text(title).padding(EdgeInsets(top: 15, leading: 0, bottom: 10, trailing: 0)).foregroundStyle(Color(stackColour)).font(.subheadline)
-            PatientCardRing(ringWidth: 5, percent: percentage, fgColour: stackColour, bgColour: stackColour).frame(height: 50).padding(EdgeInsets(top: 0, leading: 0, bottom: 15, trailing: 0))
+            Text(title).padding(EdgeInsets(top: 5, leading: 0, bottom: 0, trailing: 0)).foregroundStyle(Color(stackColour)).font(.subheadline).multilineTextAlignment(.center).lineLimit(2).frame(height: 70)
+            PatientCardRing(ringWidth: 5, percent: percentage, fgColour: stackColour, bgColour: stackColour).frame(height: 60).padding(EdgeInsets(top: 0, leading: 0, bottom: 15, trailing: 0))
         }
     }
 }
 
 #Preview {
-    RingStack(title: "Sleep", percentage: 40, stackColour: .purple)
+    RingStack(title: "Patient\nReported", percentage: 40, stackColour: .purple)
 }

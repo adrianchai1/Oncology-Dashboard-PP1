@@ -9,11 +9,17 @@ import SwiftUI
 
 struct TimelineCycle: View {
     
-    let cycleNumber: Int = 1
-    let cycleStartDate: Date = Date()
-    let cycleEndDate: Date = Calendar.current.date(byAdding: .day, value: 14, to: Date()) ?? Date()
+    let cycleNumber: Int
+    let cycleStartDate: Date
+    let cycleLength: Int
+    let isSelected: Bool
+
+    var cycleEndDate: Date {
+        Calendar.current.date(byAdding: .day, value: cycleLength, to: cycleStartDate) ?? Date()
+    }
     
     @State private var timelineEvents: [TimelineEvent] = []
+    @State private var selectedEvent: TimelineEvent?
     
     
     func formatDate(date: Date) -> String {
@@ -49,20 +55,24 @@ struct TimelineCycle: View {
                         let event = sortedEvents[index]
                         let yValue = CGFloat((index % 2 == 0) ? 3 : 1)
                         // Stack for the timeline event and the line
-                        VStack {
-                            // If the event is above the timeline, order the event before the rectangle
-                            if yValue == 1 {
-                                TimelineEventView(timelineEvent: event)
+                        Button {
+                            selectedEvent = event
+                        } label: {
+                            VStack {
+                                // If the event is above the timeline, order the event before the rectangle
+                                if yValue == 1 {
+                                    TimelineEventView(timelineEvent: event)
+                                }
+                                Rectangle()
+                                    .fill(event.getColor)
+                                    .frame(width: 2, height: 50)
+                                
+                                // Otherwise order the rectangle before the event.
+                                if yValue != 1 {
+                                    TimelineEventView(timelineEvent: event)
+                                }
                             }
-                            Rectangle()
-                                .fill(event.getColor)
-                                .frame(width: 2, height: 50)
-                            
-                            // Otherwise order the rectangle before the event.
-                            if yValue != 1 {
-                                TimelineEventView(timelineEvent: event)
-                            }
-                        }
+                        }.buttonStyle(.plain)
                         .position(
                             x: geometry.size.width * getXPosition(eventDate: event.date),
                             y: (yValue == 1)
@@ -77,9 +87,8 @@ struct TimelineCycle: View {
         }
         .padding(20)
         .frame(width: 300, height: 300)
-        .background(Color(white: 0.95))
+        .background(isSelected ? Color(white: 0.85) : Color(white: 0.95))
         .cornerRadius(20)
-        
         .onAppear {
             timelineEvents = [
                 getTestTimelineEvent(startDate: cycleStartDate, forceDate: cycleStartDate),
@@ -87,12 +96,12 @@ struct TimelineCycle: View {
                 getTestTimelineEvent(startDate: cycleStartDate),
                 getTestTimelineEvent(startDate: cycleStartDate, forceDate: cycleEndDate)
             ]
+        }.sheet(item: $selectedEvent) { event in
+            EventSheetView(event: event)
         }
-        
-        
     }
 }
 
 #Preview {
-    TimelineCycle()
+    TimelineCycle(cycleNumber: 4, cycleStartDate: Date(), cycleLength: 14, isSelected: false)
 }

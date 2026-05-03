@@ -20,40 +20,15 @@ struct EventSheetView: View {
                 }.padding(10)
                 Spacer()
                 
-                if (event.eventId == EventID.chemotherapy) {
-                    Text("Treatment Details")
-                    List {
-                        HStack {
-                            Text("Regimen/Drug")
-                            Spacer()
-                            Text("IV Chemotherapy Drug")
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            Text("Dose")
-                            Spacer()
-                            Text("175mg")
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            Text("Route")
-                            Spacer()
-                            Text("IV")
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            Text("Duration")
-                            Spacer()
-                            Text("3 hrs")
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            Text("Location")
-                            Spacer()
-                            Text("Oncology Ward Floor 3")
-                                .foregroundStyle(.secondary)
-                        }
-                    }.scrollContentBackground(.hidden)
+                switch event.eventId {
+                case EventID.chemotherapy:
+                    ChemotherapyDescription()
+                case EventID.appointment:
+                    AppointmentDescription()
+                case EventID.emergency:
+                    EmergencyDescription()
+                case EventID.other:
+                    OtherDescription(title: event.title ?? "")
                 }
             }.navigationTitle(event.getTitle).navigationBarTitleDisplayMode(.inline).toolbar {
                 ToolbarItem {

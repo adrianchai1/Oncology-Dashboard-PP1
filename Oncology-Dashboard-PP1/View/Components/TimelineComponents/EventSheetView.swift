@@ -22,13 +22,13 @@ struct EventSheetView: View {
                 
                 switch event.eventId {
                 case EventID.chemotherapy:
-                    ChemotherapyDescription()
+                    ChemotherapyDescriptionView()
                 case EventID.appointment:
-                    AppointmentDescription()
+                    AppointmentDescriptionView()
                 case EventID.emergency:
-                    EmergencyDescription()
+                    EmergencyDescriptionView()
                 case EventID.other:
-                    OtherDescription(title: event.title ?? "")
+                    OtherDescriptionView(title: event.title ?? "")
                 }
             }.navigationTitle(event.eventId.title).navigationBarTitleDisplayMode(.inline).toolbar {
                 ToolbarItem {

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ChemotherapyDescription: View {
+struct ChemotherapyDescriptionView: View {
     var body: some View {
             Text("Treatment Details")
             List {
@@ -46,5 +46,5 @@ struct ChemotherapyDescription: View {
 }
 
 #Preview {
-    ChemotherapyDescription()
+    ChemotherapyDescriptionView()
 }

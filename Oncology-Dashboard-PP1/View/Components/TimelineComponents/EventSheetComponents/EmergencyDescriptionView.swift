@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct EmergencyDescription: View {
+struct EmergencyDescriptionView: View {
     var body: some View {
             Text("Emergency Details")
             List {
@@ -35,5 +35,5 @@ struct EmergencyDescription: View {
 }
 
 #Preview {
-    EmergencyDescription()
+    EmergencyDescriptionView()
 }

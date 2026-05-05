@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct AppointmentDescription: View {
+struct AppointmentDescriptionView: View {
     var body: some View {
             Text("Appointment Details")
             List {
@@ -28,5 +28,5 @@ struct AppointmentDescription: View {
 }
 
 #Preview {
-    AppointmentDescription()
+    AppointmentDescriptionView()
 }

@@ -8,11 +8,7 @@
 import SwiftUI
 import Charts
 
-struct GraphData: Identifiable {
-    var id = UUID()
-    var date: Date
-    var data: Double
-}
+// TODO: Add title
 
 struct GraphView: View {
     
@@ -52,16 +48,7 @@ struct GraphView: View {
     }
 }
 
-func getTestGraphData() -> [GraphData] {
-    var data: [GraphData] = []
-    
-    for i in (0..<14) {
-        let newDate = Calendar.current.date(byAdding: .day, value: i, to: Date()) ?? Date()
-        data.append(GraphData(date: newDate, data: Double.random(in: 10...30)))
-    }
-    
-    return data
-}
+
 
 #Preview {
     GraphView(

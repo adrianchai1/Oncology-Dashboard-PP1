@@ -26,15 +26,26 @@ struct PatientSheetView: View {
                     TimelineView(timelineCycleCount: patient.cycleCount, patientStartDate: patient.treatmentStartDate, selectedCycle: $selectedCycle).padding(EdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10))
                     Text("Significant Deviations from Baseline").font(Font.title.bold())
                     
-                    
-                    GraphView(
-                        xLabel: "Date",
-                        yLabel: "Test",
-                        graphData: getTestGraphData(),
-                        color: Color.red
-                    )
-                    .frame(width: 500, height: 200)
-                    .padding(.horizontal, 30)
+                    HStack {
+                        GraphView(
+                            xLabel: "Date",
+                            yLabel: "Test",
+                            graphData: getTestGraphData(),
+                            color: Color.red
+                        )
+                        .frame(width: 400, height: 200)
+                        .padding(.horizontal, 30)
+                        
+                        
+                            GraphView(
+                                xLabel: "Date",
+                                yLabel: "Test",
+                                graphData: getTestGraphData(),
+                                color: Color.blue
+                            )
+                            .frame(width: 400, height: 200)
+                            .padding(.horizontal, 30)
+                    }
                     
                 }.navigationTitle(patient.patientName).navigationBarTitleDisplayMode(.inline).toolbar {
                     ToolbarItem(placement: .topBarTrailing) {

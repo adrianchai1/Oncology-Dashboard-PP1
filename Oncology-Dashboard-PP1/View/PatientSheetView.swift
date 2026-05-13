@@ -14,6 +14,8 @@ struct PatientSheetView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedCycle = 0
     
+    @State var showNewEventForm = false
+    
     var body: some View {
         NavigationStack {
             ScrollView(.vertical) {
@@ -21,6 +23,14 @@ struct PatientSheetView: View {
                     HStack {
                         Spacer()
                         TimelineLegend()
+                        
+                        Button(action: {
+                            showNewEventForm = true
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 40))
+                                .foregroundStyle(.green)
+                        }
                     }
                     .padding(EdgeInsets(top: 30, leading: 10, bottom: 0, trailing: 10))
                     TimelineView(timelineCycleCount: patient.cycleCount, patientStartDate: patient.treatmentStartDate, selectedCycle: $selectedCycle).padding(EdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10))
@@ -57,6 +67,8 @@ struct PatientSheetView: View {
                     }
                 }
             }
+        }.sheet(isPresented: $showNewEventForm) {
+            NewTimelineEventView()
         }
     }
 }

@@ -36,7 +36,7 @@ struct PatientView: View {
                         Text($0)
                     }
                 }.pickerStyle(.segmented).frame(width:450)
-            }
+            }       
         }
     }
 }

@@ -19,11 +19,12 @@ struct NewTimelineEventView: View {
     
     @State var errorMessage: String = ""
     
-    private func validateForm() {
+    private func validateForm() -> Bool {
         
         
         if selectedEventType == EventID.other.title && title == "" {
             errorMessage = "Error: Missing event title"
+            return false
         }
         
         let calendar = Calendar.current
@@ -33,8 +34,11 @@ struct NewTimelineEventView: View {
         // Make sure the selected date is NOT in the future
         if startOfInput > startOfToday {
             errorMessage = "Error: Event date cannot be in the future"
+            return false
         }
         
+        errorMessage = ""
+        return true
     }
     
     var body: some View {
@@ -75,10 +79,21 @@ struct NewTimelineEventView: View {
                 }
                 
                 
+                if errorMessage != "" {
+                    Text(errorMessage)
+                        .foregroundStyle(.red)
+                }
+                
             }.navigationTitle("New Timeline Event").navigationBarTitleDisplayMode(.inline).toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button() {
-                        dismiss()
+                        let validForm = validateForm()
+                        if validForm {
+                            // TODO: SAVE TO DB
+                            
+                            dismiss()
+                        }
+                        
                     } label: {
                         Image(systemName: "checkmark")
                     }.buttonStyle(.borderedProminent).tint(Color(.nhBlue))
@@ -92,6 +107,7 @@ struct NewTimelineEventView: View {
                     .buttonStyle(.borderedProminent).tint(Color(.red))
                 }
             }
+            
         }
     }
 }

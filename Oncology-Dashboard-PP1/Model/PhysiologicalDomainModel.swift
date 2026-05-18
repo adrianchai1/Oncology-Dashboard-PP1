@@ -12,4 +12,27 @@ struct PhysiologicalDomain: Codable {
     let ambulatoryHeartRate: Double
     let derivedRespiratoryRate: Double
     let skinTemperature: Double
+//    let restingHeartRate: Double
+//    let ambulatoryHeartRate: Double
+//    let derivedRespiratoryRate: Double
+//    let skinTemperature: Double
+    
+//    let restingHeartRate: Double
+//    let heartRate: Double
+//    let oxygenSaturation: Double
+//    let basalEnergyBurned: Double
+//    let VO2Max: Double
+//    let respitoryRate: Double
+//    let walkingHeartRateAverage: Double
+//    let heartRateVariabilitySDNN: Double
+    
+//    HKQuantityTypeIdentifierRestingHeartRate
+//    HKQuantityTypeIdentifierHeartRate
+//    HKQuantityTypeIdentifierOxygenSaturation
+//    HKQuantityTypeIdentifierBasalEnergyBurned
+//    HKQuantityTypeIdentifierVO2Max
+//    HKQuantityTypeIdentifierRespiratoryRate
+//    HKQuantityTypeIdentifierWalkingHeartRateAverage
+//    HKQuantityTypeIdentifierHeartRateVariabilitySDNN
+    
 }

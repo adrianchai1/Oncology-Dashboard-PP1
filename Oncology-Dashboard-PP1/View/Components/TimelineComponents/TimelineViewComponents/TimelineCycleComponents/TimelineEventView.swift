@@ -21,15 +21,3 @@ struct TimelineEventView: View {
         }
     }
 }
-
-#Preview {
-    TimelineEventView(timelineEvent: getTestTimelineEvent(startDate: Date(), forceDate: Date()))
-    TimelineEventView(timelineEvent: getTestTimelineEvent(startDate: Date()))
-    TimelineEventView(timelineEvent: getTestTimelineEvent(startDate: Date()))
-    TimelineEventView(timelineEvent: getTestTimelineEvent(startDate: Date()))
-    TimelineEventView(timelineEvent: getTestTimelineEvent(startDate: Date()))
-    TimelineEventView(timelineEvent: getTestTimelineEvent(startDate: Date()))
-    TimelineEventView(timelineEvent: getTestTimelineEvent(startDate: Date()))
-    TimelineEventView(timelineEvent: getTestTimelineEvent(startDate: Date()))
-    TimelineEventView(timelineEvent: getTestTimelineEvent(startDate: Date()))
-}

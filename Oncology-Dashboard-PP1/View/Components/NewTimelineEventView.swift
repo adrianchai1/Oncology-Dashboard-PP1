@@ -30,8 +30,7 @@ struct NewTimelineEventView: View {
         let calendar = Calendar.current
         let startOfToday = calendar.startOfDay(for: Date())
         let startOfInput = calendar.startOfDay(for: selectedDate)
-        
-        // Make sure the selected date is NOT in the future
+    
         if startOfInput > startOfToday {
             errorMessage = "Error: Event date cannot be in the future"
             return false
@@ -43,7 +42,6 @@ struct NewTimelineEventView: View {
     
     var body: some View {
         
-        //        Text("")
         NavigationStack {
             Form {
                 Picker("Event Type", selection: $selectedEventType) {

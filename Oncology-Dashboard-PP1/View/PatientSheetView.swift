@@ -9,6 +9,9 @@ import SwiftUI
 
 struct PatientSheetView: View {
     
+    @State private var vm = PatientSheetViewViewModel()
+    @State private var chemoVM = ChemotherapyEventsViewModel()
+    
     let patient: Patient
     
     @Environment(\.dismiss) private var dismiss
@@ -33,7 +36,7 @@ struct PatientSheetView: View {
                         }
                     }
                     .padding(EdgeInsets(top: 30, leading: 10, bottom: 0, trailing: 10))
-                    TimelineView(timelineCycleCount: patient.cycleCount, patientStartDate: patient.treatmentStartDate, selectedCycle: $selectedCycle).padding(EdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10))
+                    TimelineView(timelineCycleCount: patient.cycleCount, patientStartDate: patient.treatmentStartDate, timelineEvents: vm.timelineEvents, chemoEvents: chemoVM.chemotherapyEvents, selectedCycle: $selectedCycle).padding(EdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10))
                     Text("Significant Deviations from Baseline").font(Font.title.bold())
                     
                     HStack {
@@ -67,12 +70,12 @@ struct PatientSheetView: View {
                     }
                 }
             }
+        }.task {
+            vm.fetchEvents(for: patient.id)
+            chemoVM.fetchChemotherapyEvents(for: patient.id)
         }.sheet(isPresented: $showNewEventForm) {
             NewTimelineEventView()
         }
     }
 }
 
-#Preview {
-    PatientSheetView(patient: TinaDinh)
-}

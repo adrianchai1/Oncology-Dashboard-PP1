@@ -6,12 +6,65 @@
 //
 
 import Foundation
+import Observation
+
+struct PatientDTO: Codable {
+    let id: Int
+    let email: String
+    let cancer_type: String
+    let urn: String
+    let name: String
+    let cycle_duration_days: Int
+    let cycle_count: Int
+    let treatment_start_date: String
+    let sleep_percentage: Double
+    let physiological_percentage: Double
+    let patient_reported_percentage: Double
+    let activity_percentage: Double
+}
 
 @Observable
 class PatientsViewViewModel {
-    var patients: [Patient]
-    
-    init(patients: [Patient]) {
-        self.patients = patients
+    var patients: [Patient] = []
+
+    func fetchPatients() {
+        guard let url = URL(string: "http://170.64.254.24:3001/api/patients") else { return }
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print("Network error:", error)
+                return
+            }
+
+            guard let data = data else {
+                print("No data")
+                return
+            }
+            do {
+                let decodedDTOs = try JSONDecoder().decode([PatientDTO].self, from: data)
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd"
+                let mappedPatients = decodedDTOs.map { dto in
+                    Patient(
+                        id: dto.id,
+                        urn: dto.urn,
+                        cancerType: dto.cancer_type,
+                        patientName: dto.name,
+                        treatmentStartDate: formatter.date(from: dto.treatment_start_date) ?? Date(),
+                        cycleCount: dto.cycle_count,
+                        cycleLengthInDays: dto.cycle_duration_days,
+                        sleepPercentage: dto.sleep_percentage,
+                        physiologicalPercentage: dto.physiological_percentage,
+                        patientReportedPercentage: dto.patient_reported_percentage,
+                        activityPercentage: dto.activity_percentage
+                    )
+                }
+                DispatchQueue.main.async {
+                    self.patients = mappedPatients
+                    print("Loaded patients:", self.patients.count)
+                }
+            } catch {
+                print("Decoding error:", error)
+            }
+        }.resume()
     }
 }

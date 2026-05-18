@@ -8,13 +8,12 @@
 import Foundation
 
 struct TimelineEvent: Identifiable, Codable {
-    var id: UUID = UUID()
+    var id: Int
     var eventId: EventID
     var date: Date
     var notes: String
-    var doctorId: UUID = UUID()
+    var doctorId: Int
     var title: String?
-    
     
     var displayTitle: String {
         title ?? eventId.title

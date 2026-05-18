@@ -12,6 +12,4 @@ struct PhysiologicalDomain: Codable {
     let ambulatoryHeartRate: Double
     let derivedRespiratoryRate: Double
     let skinTemperature: Double
-    
-    
 }

@@ -13,12 +13,19 @@ struct TimelineCycle: View {
     let cycleStartDate: Date
     let cycleLength: Int
     let isSelected: Bool
+    let timelineEvents: [TimelineEvent]
+    let chemoEvents: [ChemotherapyEvent]
 
     var cycleEndDate: Date {
         Calendar.current.date(byAdding: .day, value: cycleLength, to: cycleStartDate) ?? Date()
     }
     
-    @State private var timelineEvents: [TimelineEvent] = []
+    var eventsInCycle: [TimelineEvent] {
+        timelineEvents.filter { event in
+            event.date >= cycleStartDate && event.date < cycleEndDate
+        }
+    }
+    
     @State private var selectedEvent: TimelineEvent?
     
     
@@ -34,7 +41,7 @@ struct TimelineCycle: View {
         let components = Calendar.current.dateComponents([.day], from: cycleStartDate, to: eventDate)
         let dayDifference = components.day ?? 0
         
-        return CGFloat(dayDifference) / 14
+        return CGFloat(dayDifference) / CGFloat(cycleLength)
     }
     
     var body: some View {
@@ -50,7 +57,7 @@ struct TimelineCycle: View {
             // Timeline Events layed out based on how far along in the week it is
             GeometryReader { geometry in
                 ZStack {
-                    let sortedEvents = timelineEvents.sorted { $0.date < $1.date }
+                    let sortedEvents = eventsInCycle.sorted { $0.date < $1.date }
                     ForEach(sortedEvents.indices, id: \.self) { index in
                         let event = sortedEvents[index]
                         let yValue = CGFloat((index % 2 == 0) ? 3 : 1)
@@ -88,20 +95,9 @@ struct TimelineCycle: View {
         .padding(20)
         .frame(width: 300, height: 300)
         .background(isSelected ? Color(white: 0.85) : Color(white: 0.95))
-        .cornerRadius(20)
-        .onAppear {
-            timelineEvents = [
-                getTestTimelineEvent(startDate: cycleStartDate, forceDate: cycleStartDate),
-                getTestTimelineEvent(startDate: cycleStartDate),
-                getTestTimelineEvent(startDate: cycleStartDate),
-                getTestTimelineEvent(startDate: cycleStartDate, forceDate: cycleEndDate)
-            ]
-        }.sheet(item: $selectedEvent) { event in
-            EventSheetView(event: event)
+        .cornerRadius(20).sheet(item: $selectedEvent) { event in
+            EventSheetView(event: event, chemoEvents: chemoEvents)
         }
     }
 }
 
-#Preview {
-    TimelineCycle(cycleNumber: 4, cycleStartDate: Date(), cycleLength: 14, isSelected: false)
-}

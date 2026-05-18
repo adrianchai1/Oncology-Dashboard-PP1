@@ -8,35 +8,58 @@
 import SwiftUI
 
 struct PatientView: View {
-    // this should be pulled from the VM, will do during next refactor
+    @State private var vm = PatientsViewViewModel()
     
     let cols = [GridItem(.flexible(),spacing: 5), GridItem(.flexible(),spacing: 5)]
     
-    @State private var vm = PatientsViewViewModel(patients: patientsDB)
     @State private var selection: String = "High"
     @State private var selectedPatient: Patient?
     
     let priorities = ["High", "Medium", "Low"]
     var body: some View {
+
         ScrollView {
-            LazyVGrid(columns: cols) {
-                ForEach(vm.patients) { patient in
-                    PatientCard(patientName: patient.patientName, cycleNumber: patient.cycleCount, URNumber: patient.URN, sleepPercentage: patient.sleepPercentage, physiologicalPercentage: patient.physiologicalPercentage, activityPercentage: patient.activityPercentage, patientReportedPercentage: patient.patientReportedPercentage)
+            if vm.patients.isEmpty {
+                Text("No patients loaded")
+                Text(vm.patients.count.description)
+                    .foregroundStyle(.secondary)
+                    .padding()
+            } else {
+                LazyVGrid(columns: cols) {
+                    ForEach(vm.patients) { patient in
+                        PatientCard(
+                            patientName: patient.patientName,
+                            cycleNumber: patient.cycleCount,
+                            URNumber: patient.urn,
+                            sleepPercentage: patient.sleepPercentage,
+                            physiologicalPercentage: patient.physiologicalPercentage,
+                            activityPercentage: patient.activityPercentage,
+                            patientReportedPercentage: patient.patientReportedPercentage
+                        )
                         .onTapGesture {
                             selectedPatient = patient
+                        }
                     }
                 }
+                .padding()
             }
-        }.fullScreenCover(item: $selectedPatient) { selected in
+        }
+        .task {
+            vm.fetchPatients()
+        }
+        .fullScreenCover(item: $selectedPatient) { selected in
             PatientSheetView(patient: selected)
-        }.toolbar {
+        }
+        .toolbar {
             ToolbarItem(placement: .principal) {
                 Picker("Priority", selection: $selection) {
                     ForEach(priorities, id: \.self) {
                         Text($0)
                     }
-                }.pickerStyle(.segmented).frame(width:450)
-            }       
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 450)
+            }
         }
     }
 }

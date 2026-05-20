@@ -12,6 +12,8 @@ struct MetricData {
     let value: Double
 }
 
+
+
 private let calendar = Calendar.current
 
 private let data: [MetricData] = [
@@ -67,6 +69,7 @@ private let cycleDurationDays = 14
 
 private func calculatePercentageDifference(currAvg: Double, prevAvg: Double) -> Double {
     // Returns a percentage
+    
     
     return ((currAvg - prevAvg) / prevAvg) * 100
 }

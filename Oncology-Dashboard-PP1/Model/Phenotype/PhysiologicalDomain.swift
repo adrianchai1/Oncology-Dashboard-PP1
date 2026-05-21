@@ -8,8 +8,9 @@
 import Foundation
 
 struct PhysiologicalDomain: Codable {
-    let restingHeartRate: Double
-    let ambulatoryHeartRate: Double
-    let derivedRespiratoryRate: Double
-    let skinTemperature: Double
+    let id: Int
+    let userId: Int
+    let date: Date
+    let type: String
+    let value: Double
 }

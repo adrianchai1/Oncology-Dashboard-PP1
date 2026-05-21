@@ -15,6 +15,14 @@ struct PhysiologicalDomainDTO: Codable {
     let value: Double
 }
 
+struct ActivityDomainDTO: Codable {
+    let entryid: Int
+    let userid: Int
+    let date: String
+    let type: String
+    let value: Double
+}
+
 
 
 //    do {
@@ -50,3 +58,30 @@ func fetchPhysiologicalData(for patientId: Int) async throws -> [PhysiologicalDo
 
 }
 
+func fetchActivityData(for patientId: Int) async throws -> [ActivityDomain] {
+    
+    
+    guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/activity") else {
+        return []
+    }
+    
+    let (data, _) = try await URLSession.shared.data(from: url)
+    
+    let decodedDTOs = try JSONDecoder().decode([ActivityDomainDTO].self, from: data)
+
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd"
+    
+    let mappedPhysiologicalDomain = decodedDTOs.map { dto in
+        ActivityDomain(
+            id: dto.entryid,
+            userId: dto.userid,
+            date: formatter.date(from: dto.date) ?? Date(),
+            type: dto.type,
+            value: dto.value
+        )
+    }
+    
+    return mappedPhysiologicalDomain
+
+}

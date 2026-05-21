@@ -30,6 +30,83 @@ class TimelineViewViewModel {
         self.patientTreatmentStartDate = patientTreatmentStartDate
         self.patientTreatmentEndDate = patientTreatmentEndDate
     }
+    
+    private func getActivityPercentageDeviance(patientId: Int) async throws -> [MetricData] {
+        let activityData = try await fetchActivityData(for: patientId)
+        // Only use data after the start date
+        let cycleActivityData = activityData.filter { $0.date >= self.patientTreatmentStartDate }
+        // Group by the types
+        
+        let groupedActivityData = Dictionary(grouping: cycleActivityData) { $0.type }
+            .sorted { $0.key < $1.key }
+            .map { $0.value }
+        
+//                            print("Calculating day day variance for each type")
+        var percentageDeviances: [[MetricData]] = []
+        // Calculate the percentage deviance for each entry from the last
+        for activityTypes in groupedActivityData {
+//            print(activityTypes.first!.type)
+            let metricData = activityTypes.map { entry in
+                MetricData(date: entry.date, value: entry.value)
+            } .sorted { $0.date < $1.date }
+            let newMetricData = calculateDayByDayDomainDeviation(data: metricData)
+            
+//                                 Print for debugging
+//            for i in newMetricData {
+//                print("\(i.date) : \(i.deviationPercentage)")
+//            }
+//            print("---------")
+            percentageDeviances.append(newMetricData)
+        }
+        
+        let activityPercentageDeviance = calculateDomainPercentageDeviance(data: percentageDeviances, startDate: self.patientTreatmentStartDate, endDate: self.patientTreatmentEndDate)
+        
+        print("\nOVERALL PERCENTAGE DEVIANCE FROM BASELINE:")
+        for i in activityPercentageDeviance {
+            print("\(i.date) : \(i.deviationPercentage)")
+        }
+        
+        return activityPercentageDeviance
+    }
+    
+    private func getPhysiologicalPercentageDeviance(patientId: Int) async throws -> [MetricData] {
+        let physiologicalData = try await fetchPhysiologicalData(for: patientId)
+        // Only use data after the start date
+        let cyclePhysiologicalData = physiologicalData.filter { $0.date >= self.patientTreatmentStartDate }
+        // Group by the types
+        
+        let groupedPhysiologicalData = Dictionary(grouping: cyclePhysiologicalData) { $0.type }
+            .sorted { $0.key < $1.key }
+            .map { $0.value }
+        
+//                            print("Calculating day day variance for each type")
+        var percentageDeviances: [[MetricData]] = []
+        // Calculate the percentage deviance for each entry from the last
+        for physiologicalTypes in groupedPhysiologicalData {
+            print(physiologicalTypes.first!.type)
+            let metricData = physiologicalTypes.map { entry in
+                MetricData(date: entry.date, value: entry.value)
+            } .sorted { $0.date < $1.date }
+            let newMetricData = calculateDayByDayDomainDeviation(data: metricData)
+                
+            // Print for debugging
+//            for i in newMetricData {
+//                print("\(i.date) : \(i.deviationPercentage)")
+//            }
+//            print("---------")
+            percentageDeviances.append(newMetricData)
+        }
+        
+        let physiologicalPercentageDeviance = calculateDomainPercentageDeviance(data: percentageDeviances, startDate: self.patientTreatmentStartDate, endDate: self.patientTreatmentEndDate)
+        
+//        print("\nOVERALL PERCENTAGE DEVIANCE FROM BASELINE:")
+//        for i in physiologicalPercentageDeviance {
+//            print("\(i.date) : \(i.deviationPercentage)")
+//        }
+//        
+        return physiologicalPercentageDeviance
+        
+    }
 
     func fetchPatientPercentages(for patientId: Int) {
         guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/percentages") else {
@@ -72,57 +149,62 @@ class TimelineViewViewModel {
                     Task {
                         do {
                             // Grab the data
-                            let physiologicalData = try await fetchPhysiologicalData(for: patientId)
-                            // Only use data after the start date
-                            let cyclePhysiologicalData = physiologicalData.filter { $0.date >= self.patientTreatmentStartDate }
-                            // Group by the types
+                            let physiologicalDeviance = try await self.getPhysiologicalPercentageDeviance(patientId: patientId)
+                            let activityDeviance = try await self.getActivityPercentageDeviance(patientId: patientId)
+//                            let sleepDeviance = []
+//                            let selfReportedDeviance = []
                             
-                            let groupedPhysiologicalData = Dictionary(grouping: cyclePhysiologicalData) { $0.type }
-                                .sorted { $0.key < $1.key }
-                                .map { $0.value }
+                            let calendar = Calendar.current
+                            var currentDate = self.patientTreatmentStartDate
                             
-//                            print("Calculating day day variance for each type")
-                            var percentageDeviances: [[MetricData]] = []
-                            // Calculate the percentage deviance for each entry from the last
-                            for physiologicalTypes in groupedPhysiologicalData {
-                                print(physiologicalTypes.first!.type)
-                                let metricData = physiologicalTypes.map { entry in
-                                    MetricData(date: entry.date, value: entry.value)
-                                } .sorted { $0.date < $1.date }
-                                let newMetricData = calculateDayByDayDomainDeviation(data: metricData)
+                            var patientPercentages: [PatientPercentages] = []
+                            var idCount = 1
+                            while currentDate <= self.patientTreatmentEndDate {
                                 
-//                                 Print for debugging
-                                for i in newMetricData {
-                                    print("\(i.date) : \(i.deviationPercentage)")
+                                let physiologicalPercentage = physiologicalDeviance.first {
+                                    Calendar.current.isDate($0.date, inSameDayAs: currentDate)
                                 }
-                                print("---------")
-                                percentageDeviances.append(newMetricData)
+                                let activityPercentage = activityDeviance.first {
+                                    Calendar.current.isDate($0.date, inSameDayAs: currentDate)
+                                }
+//                                let sleepPercentage = sleepDeviance.filter { $0.date == currentDate }
+//                                let selfReportedPercentage = selfReportedDeviance.filter { $0.date == currentDate }
+                                
+                                
+                                patientPercentages.append(PatientPercentages(
+                                    id: idCount,
+                                    date: currentDate,
+                                    patientId: patientId,
+                                    physiological: physiologicalPercentage?.deviationPercentage,
+                                    activity: activityPercentage?.deviationPercentage,
+                                    sleep: nil,
+                                    selfReported: nil
+                                ))
+                                
+                                idCount += 1
+
+                                guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else {
+                                    break
+                                }
+
+                                currentDate = nextDate
                             }
-                            
-                            let physiologicalPercentageDeviance = calculateDomainPercentageDeviance(data: percentageDeviances, startDate: self.patientTreatmentStartDate, endDate: self.patientTreatmentEndDate)
-                            
-                            print("\nOVERALL PERCENTAGE DEVIANCE FROM BASELINE:")
-                            for i in physiologicalPercentageDeviance {
-                                print("\(i.date) : \(i.deviationPercentage)")
-                            }
-                            
-                            
                             
                             // Update patient percentages
                             // TODO: UPDATE TO NOT OVERRIDE BBUT ADD NEW ENTRIES AND SAVE TO DB
                             // TODO: THIS IS TEMPORARY!
-                            let mappedPercentages = physiologicalPercentageDeviance.enumerated().map { index, physiologicalDeviance in
-                                PatientPercentages(
-                                    id: index,
-                                    date: physiologicalDeviance.date,
-                                    patientId: 1,
-                                    physiological: physiologicalDeviance.deviationPercentage,
-                                    activity: nil,
-                                    sleep: nil,
-                                    selfReported: nil
-                                )
-                            }
-                            self.patientPercentages = mappedPercentages
+//                            let mappedPercentages = physiologicalDeviance.enumerated().map { index, physiologicalDeviance in
+//                                PatientPercentages(
+//                                    id: index,
+//                                    date: physiologicalDeviance.date,
+//                                    patientId: 1,
+//                                    physiological: physiologicalDeviance.deviationPercentage,
+//                                    activity: nil,
+//                                    sleep: nil,
+//                                    selfReported: nil
+//                                )
+//                            }
+                            self.patientPercentages = patientPercentages
                             for i in self.patientPercentages {
                                 print(i)
                             }

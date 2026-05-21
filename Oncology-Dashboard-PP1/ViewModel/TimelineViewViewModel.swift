@@ -85,16 +85,17 @@ class TimelineViewViewModel {
                             var percentageDeviances: [[MetricData]] = []
                             // Calculate the percentage deviance for each entry from the last
                             for physiologicalTypes in groupedPhysiologicalData {
+                                print(physiologicalTypes.first!.type)
                                 let metricData = physiologicalTypes.map { entry in
                                     MetricData(date: entry.date, value: entry.value)
                                 } .sorted { $0.date < $1.date }
                                 let newMetricData = calculateDayByDayDomainDeviation(data: metricData)
                                 
-                                // Print for debugging
-//                                for i in newMetricData {
-//                                    print("\(i.date) : \(i.value)")
-//                                }
-//                                print("---------")
+//                                 Print for debugging
+                                for i in newMetricData {
+                                    print("\(i.date) : \(i.deviationPercentage)")
+                                }
+                                print("---------")
                                 percentageDeviances.append(newMetricData)
                             }
                             
@@ -116,9 +117,9 @@ class TimelineViewViewModel {
                                     date: physiologicalDeviance.date,
                                     patientId: 1,
                                     physiological: physiologicalDeviance.deviationPercentage,
-                                    activity: 0.0,
-                                    sleep: 0.0,
-                                    selfReported: 0.0
+                                    activity: nil,
+                                    sleep: nil,
+                                    selfReported: nil
                                 )
                             }
                             self.patientPercentages = mappedPercentages

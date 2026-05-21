@@ -69,13 +69,13 @@ struct LineGraph: View {
             ForEach(Array(domainData.dataPoints.enumerated()), id: \.element.id) { pointIndex, dataPoints in
                 LineMark(
                     x: .value("Index", dataPoints.date),
-                    y: .value("Amount", dataPoints.value),
+                    y: .value("Amount", min(dataPoints.value, 100)),
                     series: .value("Domain", domainData.title)
                 )
                 .foregroundStyle(domainData.color)
                 PointMark(
                     x: .value("Index", dataPoints.date),
-                    y: .value("Amount", dataPoints.value)
+                    y: .value("Amount", min(dataPoints.value, 100))
                 )
                 .symbol(Circle())
                 .foregroundStyle(domainData.color)

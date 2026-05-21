@@ -10,13 +10,14 @@ import Foundation
 struct MetricData {
     let date: Date
     let value: Double
+    var deviationPercentage: Double = 0.0
 }
 
 
 
 private let calendar = Calendar.current
 
-private let data: [MetricData] = [
+let testMetricData: [MetricData] = [
     MetricData(date: calendar.date(from: DateComponents(year: 2026, month: 4, day: 1))!, value: 102),
     MetricData(date: calendar.date(from: DateComponents(year: 2026, month: 4, day: 2))!, value: 98),
     MetricData(date: calendar.date(from: DateComponents(year: 2026, month: 4, day: 3))!, value: 105),
@@ -151,9 +152,33 @@ private func calculateDeviationPercentageSingleValue(cycles: [[MetricData]], cur
     print("Percentage Difference: \(percentageDifference)")
 }
 
-func testTheFunctions() {
-    let cycles = splitDataIntoCycles(data: data, cycleStartDate: cycleStartDate, cycleDurationDays: cycleDurationDays)
+
+
+
+func calculateDayByDayDomainDeviation(data: [MetricData]) -> [MetricData] {
+    if data.isEmpty {return []}
+    let baselineData = data.first!
+    
+    var newData = data
+    for index in newData.indices {
+        if newData[index].date == baselineData.date {
+            continue
+        }
+        
+        newData[index].deviationPercentage = calculatePercentageDifference(currAvg: newData[index].value, prevAvg: baselineData.value)
+    }
+    
+    return newData
+}
+
+private func testTheFunctions() {
+    let cycles = splitDataIntoCycles(data: testMetricData, cycleStartDate: cycleStartDate, cycleDurationDays: cycleDurationDays)
     print(cycles)
     calculateDeviationPercentage(cycles: cycles)
     calculateDeviationPercentageSingleValue(cycles: cycles, currValue: 145)
+    
+    let newMetricData = calculateDayByDayDomainDeviation(data: testMetricData)
+    for i in newMetricData {
+        print("\(i.date) : \(i.deviationPercentage)")
+    }
 }

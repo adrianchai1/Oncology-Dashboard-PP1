@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct TimelineView: View {
+    
+    @State private var vm = TimelineViewViewModel()
+    
     let timelineCycleCount: Int
     let patientStartDate: Date
     let timelineEvents: [TimelineEvent]
     let chemoEvents: [ChemotherapyEvent]
     @Binding var selectedCycle: Int
+    
+    
     
     var body: some View {
         ScrollView(.horizontal) {
@@ -31,12 +36,17 @@ struct TimelineView: View {
                     }
                 }
                 
+                LineGraph(patientPercentages: vm.patientPercentages)
+                    .padding(.vertical, 50)
+                    .padding(.horizontal, 20)
                 // Timeline heatmap bar
-                TimelineBar()
-                    .padding(.horizontal, 10)
-                    .padding(.top, 20)
+//                TimelineBar()
+//                    .padding(.horizontal, 10)
+//                    .padding(.top, 20)
             }
+        }
+        .task {
+            vm.fetchPatientPercentages(for: 1)
         }
     }
 }
-

@@ -14,7 +14,7 @@ struct LinePoint {
     var value: Double
 }
 
-struct DomainData {
+struct DomainLineGraphData {
     let id = UUID()
     let title: String
     let dataPoints: [LinePoint]
@@ -23,7 +23,7 @@ struct DomainData {
 
 struct LineGraph: View {
     
-    @State private var domainData: [DomainData] = []
+    @State private var domainData: [DomainLineGraphData] = []
     var patientPercentages: [PatientPercentages]
     
     func convertPatientPercentages() {
@@ -47,16 +47,16 @@ struct LineGraph: View {
         }
         
         domainData = []
-        domainData.append(DomainData(title: "Physiological",
+        domainData.append(DomainLineGraphData(title: "Physiological",
                                      dataPoints: physiologicalDataPoints,
                                      color: .physiological))
-        domainData.append(DomainData(title: "Sleep",
+        domainData.append(DomainLineGraphData(title: "Sleep",
                                      dataPoints: sleepDataPoints,
                                      color: .sleep))
-        domainData.append(DomainData(title: "Activity",
+        domainData.append(DomainLineGraphData(title: "Activity",
                                      dataPoints: activityDataPoints,
                                      color: .activity))
-        domainData.append(DomainData(title: "Self Reported",
+        domainData.append(DomainLineGraphData(title: "Self Reported",
                                      dataPoints: selfReportedDataPoints,
                                      color: .selfReported))
     }

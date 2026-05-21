@@ -36,7 +36,7 @@ struct PatientSheetView: View {
                         }
                     }
                     .padding(EdgeInsets(top: 30, leading: 10, bottom: 0, trailing: 10))
-                    TimelineView(timelineCycleCount: patient.cycleCount, patientStartDate: patient.treatmentStartDate, timelineEvents: vm.timelineEvents, chemoEvents: chemoVM.chemotherapyEvents, selectedCycle: $selectedCycle).padding(EdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10))
+                    TimelineView(timelineCycleCount: patient.cycleCount, patientStartDate: patient.treatmentStartDate, cycleLengthInDays: patient.cycleLengthInDays, timelineEvents: vm.timelineEvents, chemoEvents: chemoVM.chemotherapyEvents, selectedCycle: $selectedCycle).padding(EdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10))
                     Text("Significant Deviations from Baseline").font(Font.title.bold())
                     
                     HStack {

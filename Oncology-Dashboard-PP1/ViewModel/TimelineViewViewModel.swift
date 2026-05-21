@@ -21,7 +21,15 @@ struct PatientPercentagesDTO: Codable {
 
 @Observable
 class TimelineViewViewModel {
+    var patientTreatmentStartDate: Date
+    var patientTreatmentEndDate: Date
+    
     var patientPercentages: [PatientPercentages] = []
+    
+    init(patientTreatmentStartDate: Date, patientTreatmentEndDate: Date) {
+        self.patientTreatmentStartDate = patientTreatmentStartDate
+        self.patientTreatmentEndDate = patientTreatmentEndDate
+    }
 
     func fetchPatientPercentages(for patientId: Int) {
         guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/percentages") else {
@@ -29,7 +37,6 @@ class TimelineViewViewModel {
         }
 
         URLSession.shared.dataTask(with: url) { data, response, error in
-            print("Getting patient percentages")
             if let error = error {
                 print("Event fetch error:", error)
                 return
@@ -60,7 +67,70 @@ class TimelineViewViewModel {
 
                 DispatchQueue.main.async {
                     self.patientPercentages = mappedPercentages
-                    print("Loaded percentages:", self.patientPercentages.count)
+                    print("Loaded percentages from db:", self.patientPercentages.count)
+                    
+                    Task {
+                        do {
+                            // Grab the data
+                            let physiologicalData = try await fetchPhysiologicalData(for: patientId)
+                            // Only use data after the start date
+                            let cyclePhysiologicalData = physiologicalData.filter { $0.date >= self.patientTreatmentStartDate }
+                            // Group by the types
+                            
+                            let groupedPhysiologicalData = Dictionary(grouping: cyclePhysiologicalData) { $0.type }
+                                .sorted { $0.key < $1.key }
+                                .map { $0.value }
+                            
+//                            print("Calculating day day variance for each type")
+                            var percentageDeviances: [[MetricData]] = []
+                            // Calculate the percentage deviance for each entry from the last
+                            for physiologicalTypes in groupedPhysiologicalData {
+                                let metricData = physiologicalTypes.map { entry in
+                                    MetricData(date: entry.date, value: entry.value)
+                                } .sorted { $0.date < $1.date }
+                                let newMetricData = calculateDayByDayDomainDeviation(data: metricData)
+                                
+                                // Print for debugging
+//                                for i in newMetricData {
+//                                    print("\(i.date) : \(i.value)")
+//                                }
+//                                print("---------")
+                                percentageDeviances.append(newMetricData)
+                            }
+                            
+                            let physiologicalPercentageDeviance = calculateDomainPercentageDeviance(data: percentageDeviances, startDate: self.patientTreatmentStartDate, endDate: self.patientTreatmentEndDate)
+                            
+                            print("\nOVERALL PERCENTAGE DEVIANCE FROM BASELINE:")
+                            for i in physiologicalPercentageDeviance {
+                                print("\(i.date) : \(i.deviationPercentage)")
+                            }
+                            
+                            
+                            
+                            // Update patient percentages
+                            // TODO: UPDATE TO NOT OVERRIDE BBUT ADD NEW ENTRIES AND SAVE TO DB
+                            // TODO: THIS IS TEMPORARY!
+                            let mappedPercentages = physiologicalPercentageDeviance.enumerated().map { index, physiologicalDeviance in
+                                PatientPercentages(
+                                    id: index,
+                                    date: physiologicalDeviance.date,
+                                    patientId: 1,
+                                    physiological: physiologicalDeviance.deviationPercentage,
+                                    activity: 0.0,
+                                    sleep: 0.0,
+                                    selfReported: 0.0
+                                )
+                            }
+                            self.patientPercentages = mappedPercentages
+                            for i in self.patientPercentages {
+                                print(i)
+                            }
+                            print("Calculated percentages from db:", self.patientPercentages.count)
+                            
+                        } catch {
+                            print(error)
+                        }
+                    }
                 }
 
             } catch {

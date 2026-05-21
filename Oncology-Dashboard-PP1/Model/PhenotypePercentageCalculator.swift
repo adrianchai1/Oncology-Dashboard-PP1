@@ -75,17 +75,24 @@ private func calculatePercentageDifference(currAvg: Double, prevAvg: Double) -> 
     return ((currAvg - prevAvg) / prevAvg) * 100
 }
 
-private func calculateAverage(data: [MetricData]) -> Double {
+func calculateMetricDataAverage(data: [MetricData], usePercentage: Bool = false) -> Double {
     if data.isEmpty {
         return 0.0
     }
     var sum = 0.0
     for metricData in data {
-        sum += metricData.value
+        if usePercentage {
+            sum += metricData.deviationPercentage
+        }
+        else {
+            sum += metricData.value
+        }
     }
     
     return sum / Double(data.count)
 }
+
+
 
 private func splitDataIntoCycles(data: [MetricData], cycleStartDate: Date, cycleDurationDays: Int) -> [[MetricData]]{
     let sortedData = data.sorted { $0.date < $1.date }
@@ -113,7 +120,7 @@ func calculateDeviationPercentage(cycles: [[MetricData]]) {
     var cycleCount = 1 // THIS IS JUST FOR PRINTING
     for cycle in cycles {
         print("Cycle \(cycleCount)")
-        let avg = calculateAverage(data: cycle)
+        let avg = calculateMetricDataAverage(data: cycle)
         print("Average: \(avg)")
         
         if firstCycleAvg == 0.0 {
@@ -143,7 +150,7 @@ private func calculateDeviationPercentageSingleValue(cycles: [[MetricData]], cur
     
     if cycles.isEmpty { return }
     
-    let firstCycleAvg = calculateAverage(data: cycles[0])
+    let firstCycleAvg = calculateMetricDataAverage(data: cycles[0])
     
     let percentageDifference = calculatePercentageDifference(currAvg: currValue, prevAvg: firstCycleAvg)
     
@@ -162,7 +169,7 @@ func calculateDayByDayDomainDeviation(data: [MetricData]) -> [MetricData] {
     var newData = data
     for index in newData.indices {
         if newData[index].date == baselineData.date {
-            continue
+            newData[index].deviationPercentage = 0.0
         }
         
         newData[index].deviationPercentage = calculatePercentageDifference(currAvg: newData[index].value, prevAvg: baselineData.value)
@@ -181,4 +188,35 @@ private func testTheFunctions() {
     for i in newMetricData {
         print("\(i.date) : \(i.deviationPercentage)")
     }
+}
+
+
+// THE BIG ONE!!
+// This is what calulates the domain percentage deviance based on every value of each type in the domain
+func calculateDomainPercentageDeviance(data: [[MetricData]], startDate: Date, endDate: Date) -> [MetricData] {
+    
+    // Calculate the domain percentage deviance based on all the different types
+    //   per day
+    let calendar = Calendar.current
+    var currentDate = startDate
+    
+    var percentageDeviance: [MetricData] = []
+    while currentDate <= endDate {
+        
+        let matches = data.flatMap { $0 }.filter {
+            Calendar.current.isDate($0.date, inSameDayAs: currentDate)
+        }
+        
+        let domainDayAverage = calculateMetricDataAverage(data: matches, usePercentage: true)
+        percentageDeviance.append(MetricData(date: currentDate, value: 0.0, deviationPercentage: domainDayAverage))
+        
+
+        guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else {
+            break
+        }
+
+        currentDate = nextDate
+    }
+    return percentageDeviance
+
 }

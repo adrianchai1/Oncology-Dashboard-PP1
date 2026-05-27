@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TimelineLegend: View {
+struct TimelineEventLegendView: View {
     
     @State private var openSheet = false
     
@@ -57,5 +57,5 @@ struct TimelineLegend: View {
 }
 
 #Preview {
-    TimelineLegend()
+    TimelineEventLegendView()
 }

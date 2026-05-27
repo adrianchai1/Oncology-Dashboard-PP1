@@ -19,13 +19,19 @@ struct PatientSheetView: View {
     
     @State var showNewEventForm = false
     
+    @State var displayPhysiological: Bool = true
+    @State var displayActivity: Bool = true
+    @State var displaySleep: Bool = true
+    @State var displaySelfReported: Bool = true
+    
     var body: some View {
         NavigationStack {
             ScrollView(.vertical) {
                 VStack {
                     HStack {
+                        TimelineLegendView(physiological: $displayPhysiological, activity: $displayActivity, sleep: $displaySleep, selfReported: $displaySelfReported)
                         Spacer()
-                        TimelineLegend()
+                        TimelineEventLegendView()
                         
                         Button(action: {
                             showNewEventForm = true
@@ -36,7 +42,19 @@ struct PatientSheetView: View {
                         }
                     }
                     .padding(EdgeInsets(top: 30, leading: 10, bottom: 0, trailing: 10))
-                    TimelineView(timelineCycleCount: patient.cycleCount, patientStartDate: patient.treatmentStartDate, cycleLengthInDays: patient.cycleLengthInDays, timelineEvents: vm.timelineEvents, chemoEvents: chemoVM.chemotherapyEvents, selectedCycle: $selectedCycle).padding(EdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10))
+                    TimelineView(
+                        timelineCycleCount: patient.cycleCount,
+                        patientStartDate: patient.treatmentStartDate,
+                        cycleLengthInDays: patient.cycleLengthInDays,
+                        timelineEvents: vm.timelineEvents,
+                        chemoEvents: chemoVM.chemotherapyEvents,
+                        selectedCycle: $selectedCycle,
+                        displayPhysiological: $displayPhysiological,
+                        displayActivity: $displayActivity,
+                        displaySleep: $displaySleep,
+                        displaySelfReported: $displaySelfReported
+                    )
+                        .padding(EdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10))
                     Text("Significant Deviations from Baseline").font(Font.title.bold())
                     
                     HStack {

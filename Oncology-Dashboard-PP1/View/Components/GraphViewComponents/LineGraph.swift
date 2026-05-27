@@ -26,6 +26,11 @@ struct LineGraph: View {
     @State private var domainData: [DomainLineGraphData] = []
     var patientPercentages: [PatientPercentages]
     
+    @Binding var displayPhysiological: Bool
+    @Binding var displayActivity: Bool
+    @Binding var displaySleep: Bool
+    @Binding var displaySelfReported: Bool
+    
     func convertPatientPercentages() {
         var physiologicalDataPoints: [LinePoint] = []
         var sleepDataPoints: [LinePoint] = []
@@ -47,18 +52,26 @@ struct LineGraph: View {
         }
         
         domainData = []
-        domainData.append(DomainLineGraphData(title: "Physiological",
-                                     dataPoints: physiologicalDataPoints,
-                                     color: .physiological))
-        domainData.append(DomainLineGraphData(title: "Sleep",
-                                     dataPoints: sleepDataPoints,
-                                     color: .sleep))
-        domainData.append(DomainLineGraphData(title: "Activity",
-                                     dataPoints: activityDataPoints,
-                                     color: .activity))
-        domainData.append(DomainLineGraphData(title: "Self Reported",
-                                     dataPoints: selfReportedDataPoints,
-                                     color: .selfReported))
+        if displayPhysiological {
+            domainData.append(DomainLineGraphData(title: "Physiological",
+                                                  dataPoints: physiologicalDataPoints,
+                                                  color: .physiological))
+        }
+        if displaySleep {
+            domainData.append(DomainLineGraphData(title: "Sleep",
+                                                  dataPoints: sleepDataPoints,
+                                                  color: .sleep))
+        }
+        if displayActivity {
+            domainData.append(DomainLineGraphData(title: "Activity",
+                                                  dataPoints: activityDataPoints,
+                                                  color: .activity))
+        }
+        if displaySelfReported {
+            domainData.append(DomainLineGraphData(title: "Self Reported",
+                                                  dataPoints: selfReportedDataPoints,
+                                                  color: .selfReported))
+        }
     }
     
     var body: some View {
@@ -91,6 +104,18 @@ struct LineGraph: View {
             convertPatientPercentages()
         }
         .onChange(of: patientPercentages) {
+            convertPatientPercentages()
+        }
+        .onChange(of: displayPhysiological) {
+            convertPatientPercentages()
+        }
+        .onChange(of: displaySleep) {
+            convertPatientPercentages()
+        }
+        .onChange(of: displayActivity) {
+            convertPatientPercentages()
+        }
+        .onChange(of: displaySelfReported) {
             convertPatientPercentages()
         }
 //        .frame(
@@ -144,14 +169,24 @@ struct LineGraph: View {
 //    return domainData
 //}
 
-#Preview {
+struct LineGraphPreview: View {
     var patientPercentages = [
         PatientPercentages(id: 1, date: Date(), patientId: 1, physiological: 20.0, activity: 15.0, sleep: nil, selfReported: 15.0),
         PatientPercentages(id: 2, date: Date().addingTimeInterval(10), patientId: 1, physiological: 18.0, activity: nil, sleep: 9.0, selfReported: 18.0),
         PatientPercentages(id: 3, date: Date().addingTimeInterval(20), patientId: 1, physiological: 19.0, activity: 13.0, sleep: 6.0, selfReported: 20.0),
     ]
+    @State var displayPhysiological: Bool = true
+    @State var displayActivity: Bool = true
+    @State var displaySleep: Bool = true
+    @State var displaySelfReported: Bool = true
+    var body: some View {
+        LineGraph(patientPercentages: patientPercentages, displayPhysiological: $displayPhysiological, displayActivity: $displayActivity, displaySleep: $displaySleep, displaySelfReported: $displaySelfReported)
+            .padding(.horizontal, 400)
+            .padding(.vertical, 300)
+    }
+}
+
+#Preview {
+    LineGraphPreview()
     
-    LineGraph(patientPercentages: patientPercentages)
-        .padding(.horizontal, 400)
-        .padding(.vertical, 300)
 }

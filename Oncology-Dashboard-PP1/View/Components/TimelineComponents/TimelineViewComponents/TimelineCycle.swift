@@ -46,7 +46,7 @@ struct TimelineCycle: View {
             var group: [TimelineEvent] = [event]
             eventsAlreadyGrouped.append(event.id)
             
-            var currentDay = event.date
+            let currentDay = event.date
             let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: currentDay) ?? Date()
             let eventsOnSameDay = timelineEvents.filter {
                 $0.id != event.id &&
@@ -101,14 +101,19 @@ struct TimelineCycle: View {
                         let eventsList = groupedEvents[index]
                         // Stack for the timeline event and the line
                         if eventsList.count == 1 {
-                            TimelineEventView(timelineEvent: eventsList.first!)
-                            .position(
-                                x: (geometry.size.width + 40) * getXPosition(eventDate: eventsList.first!.date),
-                                y: geometry.size.height
-                            )
+                            Button(action: {
+                                selectedEvent = eventsList.first!
+                            }) {
+                                TimelineEventView(timelineEvent: eventsList.first!)
+                                    .position(
+                                        x: (geometry.size.width + 40) * getXPosition(eventDate: eventsList.first!.date),
+                                        y: geometry.size.height
+                                    )
+                            }
+                            .buttonStyle(.plain)
                         }
                         else {
-                            TimelineEventMultipleView(timelineEvents: eventsList)
+                            TimelineEventMultipleView(timelineEvents: eventsList, selectedEvent: $selectedEvent)
                                 .position(
                                     x: (geometry.size.width + 40) * getXPosition(eventDate: eventsList.first!.date),
                                     y: geometry.size.height
@@ -185,11 +190,22 @@ struct TimelineCycle: View {
         ),
         
         TimelineEvent(
-            id: 2,
+            id: 3,
             eventId: EventID.appointment,
             date: Calendar.current.date(
                 byAdding: .day,
                 value: 2,
+                to: Date()) ?? Date(),
+            notes: "",
+            doctorId: 1
+        ),
+        
+        TimelineEvent(
+            id: 4,
+            eventId: EventID.appointment,
+            date: Calendar.current.date(
+                byAdding: .day,
+                value: 5,
                 to: Date()) ?? Date(),
             notes: "",
             doctorId: 1

@@ -57,32 +57,44 @@ struct TimelineView: View {
     }
     
     var body: some View {
-        ScrollView(.horizontal) {
-            ZStack(alignment: .bottomLeading) {
-                // All of the timeline Cycles
-                LazyHStack {
-                    ForEach(0..<timelineCycleCount) { i in
-                        let cycleStart = Calendar.current.date(
-                            byAdding: .day,
-                            value: i * 14,
-                            to: patientStartDate
-                        )
-                        TimelineCycle(cycleNumber: i + 1, cycleStartDate: cycleStart ?? Date(), cycleLength: cycleLengthInDays, isSelected: selectedCycle == i, timelineEvents: timelineEvents, chemoEvents: chemoEvents).contentShape(Rectangle()).onTapGesture {
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal) {
+                ZStack(alignment: .bottomLeading) {
+                    // All of the timeline Cycles
+                    
+                    LazyHStack {
+                        ForEach(0..<timelineCycleCount, id: \.self) { i in
+                            let cycleStart = Calendar.current.date(
+                                byAdding: .day,
+                                value: i * 14,
+                                to: patientStartDate
+                            )
+                            TimelineCycle(cycleNumber: i + 1, cycleStartDate: cycleStart ?? Date(), cycleLength: cycleLengthInDays, isSelected: selectedCycle == i, timelineEvents: timelineEvents, chemoEvents: chemoEvents).contentShape(Rectangle()).onTapGesture {
                                 selectedCycle = i
+                                
+                            }
                             
+                            .id(i)
                         }
                     }
+                    
+                    LineGraph(patientPercentages: vm.patientPercentages, displayPhysiological: $displayPhysiological, displayActivity: $displayActivity, displaySleep: $displaySleep, displaySelfReported: $displaySelfReported)
+                        .padding(.vertical, 50)
+                        .padding(.horizontal, 20)
+                        .allowsHitTesting(false)
+                    //                 Timeline heatmap bar
+                    //                    .padding(.top, 20)
+                    //                TimelineBar()
+                    //                    .padding(.horizontal, 10)
+                    //                    .zIndex(1)
                 }
-                
-                LineGraph(patientPercentages: vm.patientPercentages, displayPhysiological: $displayPhysiological, displayActivity: $displayActivity, displaySleep: $displaySleep, displaySelfReported: $displaySelfReported)
-                    .padding(.vertical, 50)
-                    .padding(.horizontal, 20)
-                    .allowsHitTesting(false)
-//                 Timeline heatmap bar
-//                    .padding(.top, 20)
-//                TimelineBar()
-//                    .padding(.horizontal, 10)
-//                    .zIndex(1)
+            }
+            .onAppear {
+                DispatchQueue.main.async {
+                    if timelineCycleCount > 0 {
+                        proxy.scrollTo(timelineCycleCount - 1, anchor: .trailing)
+                    }
+                }
             }
         }
         .task {

@@ -19,6 +19,11 @@ struct TimelineView: View {
     
     @State private var vm: TimelineViewViewModel
     
+    @Binding var displayPhysiological: Bool
+    @Binding var displayActivity: Bool
+    @Binding var displaySleep: Bool
+    @Binding var displaySelfReported: Bool
+    
     // Doing this so I can parse in the patient start date to validate new entries -Jonno
     init(
         timelineCycleCount: Int,
@@ -26,7 +31,11 @@ struct TimelineView: View {
         cycleLengthInDays: Int,
         timelineEvents: [TimelineEvent],
         chemoEvents: [ChemotherapyEvent],
-        selectedCycle: Binding<Int>
+        selectedCycle: Binding<Int>,
+        displayPhysiological: Binding<Bool>,
+        displayActivity: Binding<Bool>,
+        displaySleep: Binding<Bool>,
+        displaySelfReported: Binding<Bool>
     ) {
         self.timelineCycleCount = timelineCycleCount
         self.patientStartDate = patientStartDate
@@ -34,6 +43,10 @@ struct TimelineView: View {
         self.timelineEvents = timelineEvents
         self.chemoEvents = chemoEvents
         self._selectedCycle = selectedCycle
+        self._displayPhysiological = displayPhysiological
+        self._displaySleep = displaySleep
+        self._displayActivity = displayActivity
+        self._displaySelfReported = displaySelfReported
 
         _vm = State(
             initialValue: TimelineViewViewModel(
@@ -61,9 +74,10 @@ struct TimelineView: View {
                     }
                 }
                 
-                LineGraph(patientPercentages: vm.patientPercentages)
+                LineGraph(patientPercentages: vm.patientPercentages, displayPhysiological: $displayPhysiological, displayActivity: $displayActivity, displaySleep: $displaySleep, displaySelfReported: $displaySelfReported)
                     .padding(.vertical, 50)
                     .padding(.horizontal, 20)
+                    .allowsHitTesting(false)
 //                 Timeline heatmap bar
 //                    .padding(.top, 20)
 //                TimelineBar()

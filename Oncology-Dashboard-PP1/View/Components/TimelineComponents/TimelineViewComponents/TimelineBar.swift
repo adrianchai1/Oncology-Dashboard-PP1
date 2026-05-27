@@ -17,7 +17,7 @@ struct TimelineBar: View {
                     endPoint: .trailing
                 )
             )
-            .frame(height: 30)
+            .frame(height: 5)
     }
 }
 

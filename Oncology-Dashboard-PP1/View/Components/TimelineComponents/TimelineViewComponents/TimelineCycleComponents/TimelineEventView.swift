@@ -13,11 +13,21 @@ struct TimelineEventView: View {
     var body: some View {
         ZStack {
             Circle()
+            // The commented out code is the white backgroound and colored image
+            
                 .frame(width: 35, height: 35)
                 .foregroundColor(timelineEvent.eventId.color)
+//                .foregroundStyle(Color(white: 1))
             
             Image(systemName: "\(timelineEvent.eventId.icon)")
                 .font(.system(size: 15, weight: .bold))
+//                .foregroundColor(timelineEvent.eventId.color)
+        
         }
     }
+}
+
+
+#Preview {
+    TimelineEventView(timelineEvent: TimelineEvent(id: 1, eventId: EventID.chemotherapy, date: Date(), notes: "Test", doctorId: 1))
 }

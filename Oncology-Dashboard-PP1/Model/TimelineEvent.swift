@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TimelineEvent: Identifiable, Codable {
+struct TimelineEvent: Identifiable, Codable, Hashable {
     var id: Int
     var eventId: EventID
     var date: Date

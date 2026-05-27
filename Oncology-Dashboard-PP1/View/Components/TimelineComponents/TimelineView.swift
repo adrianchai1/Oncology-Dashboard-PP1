@@ -45,7 +45,7 @@ struct TimelineView: View {
     
     var body: some View {
         ScrollView(.horizontal) {
-            ZStack(alignment: .leading) {
+            ZStack(alignment: .bottomLeading) {
                 // All of the timeline Cycles
                 LazyHStack {
                     ForEach(0..<timelineCycleCount) { i in
@@ -56,6 +56,7 @@ struct TimelineView: View {
                         )
                         TimelineCycle(cycleNumber: i + 1, cycleStartDate: cycleStart ?? Date(), cycleLength: cycleLengthInDays, isSelected: selectedCycle == i, timelineEvents: timelineEvents, chemoEvents: chemoEvents).contentShape(Rectangle()).onTapGesture {
                                 selectedCycle = i
+                            
                         }
                     }
                 }
@@ -63,10 +64,11 @@ struct TimelineView: View {
                 LineGraph(patientPercentages: vm.patientPercentages)
                     .padding(.vertical, 50)
                     .padding(.horizontal, 20)
-                // Timeline heatmap bar
+//                 Timeline heatmap bar
+//                    .padding(.top, 20)
 //                TimelineBar()
 //                    .padding(.horizontal, 10)
-//                    .padding(.top, 20)
+//                    .zIndex(1)
             }
         }
         .task {

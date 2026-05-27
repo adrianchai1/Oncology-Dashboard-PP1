@@ -11,6 +11,7 @@ struct TimelineEventMultipleView: View {
 
     var timelineEvents: [TimelineEvent]
     @State var expanded = false
+    @Binding var selectedEvent: TimelineEvent?
 
     var body: some View {
         ZStack {
@@ -34,7 +35,12 @@ struct TimelineEventMultipleView: View {
             if expanded {
                 VStack(spacing: 8) {
                     ForEach(timelineEvents, id: \.self) { event in
-                        TimelineEventView(timelineEvent: event)
+                        Button(action: {
+                            selectedEvent = event
+                        }) {
+                            TimelineEventView(timelineEvent: event)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.bottom, 45)
@@ -44,9 +50,17 @@ struct TimelineEventMultipleView: View {
     }
 }
 
+struct TimelineEventMultipleViewPreview: View {
+    @State var selectedEvent: TimelineEvent?
+    var body: some View {
+        TimelineEventMultipleView(timelineEvents: [
+            TimelineEvent(id: 1, eventId: EventID.chemotherapy, date: Date(), notes: "", doctorId: 1),
+            TimelineEvent(id: 2, eventId: EventID.appointment, date: Date(), notes: "", doctorId: 1)
+            
+        ], selectedEvent: $selectedEvent)
+    }
+}
+
 #Preview {
-    TimelineEventMultipleView(timelineEvents: [
-        TimelineEvent(id: 1, eventId: EventID.chemotherapy, date: Date(), notes: "", doctorId: 1),
-        TimelineEvent(id: 2, eventId: EventID.appointment, date: Date(), notes: "", doctorId: 1)
-    ])
+    TimelineEventMultipleViewPreview()
 }

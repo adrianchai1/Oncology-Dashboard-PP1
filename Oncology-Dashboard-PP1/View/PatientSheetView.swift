@@ -15,7 +15,7 @@ struct PatientSheetView: View {
     let patient: Patient
     
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedCycle = 0
+    @State private var selectedCycle = -1
     
     @State var showNewEventForm = false
     
@@ -25,50 +25,78 @@ struct PatientSheetView: View {
     @State var displaySelfReported: Bool = true
     
     var body: some View {
-        NavigationStack {
-            ScrollView(.vertical) {
-                HStack {
-                    RadarGraphView()
-                    Spacer()
-                }
-                
-                VStack {
+        
+        ZStack {
+            NavigationStack {
+                ScrollView(.vertical) {
                     HStack {
-                        TimelineLegendView(physiological: $displayPhysiological, activity: $displayActivity, sleep: $displaySleep, selfReported: $displaySelfReported)
+                        RadarGraphView()
                         Spacer()
-                        TimelineEventLegendView()
-                        
-                        Button(action: {
-                            showNewEventForm = true
-                        }) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.system(size: 40))
-                                .foregroundStyle(.green)
+                    }
+                    
+                    VStack {
+                        HStack {
+                            TimelineLegendView(physiological: $displayPhysiological, activity: $displayActivity, sleep: $displaySleep, selfReported: $displaySelfReported)
+                            Spacer()
+                            TimelineEventLegendView()
+                            
+                            Button(action: {
+                                showNewEventForm = true
+                            }) {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.system(size: 40))
+                                    .foregroundStyle(.green)
+                            }
+                        }
+                        .padding(EdgeInsets(top: 30, leading: 10, bottom: 0, trailing: 10))
+                        TimelineView(
+                            timelineCycleCount: patient.cycleCount,
+                            patientStartDate: patient.treatmentStartDate,
+                            cycleLengthInDays: patient.cycleLengthInDays,
+                            timelineEvents: vm.timelineEvents,
+                            chemoEvents: chemoVM.chemotherapyEvents,
+                            selectedCycle: $selectedCycle,
+                            displayPhysiological: $displayPhysiological,
+                            displayActivity: $displayActivity,
+                            displaySleep: $displaySleep,
+                            displaySelfReported: $displaySelfReported
+                        )
+                        .padding(EdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10))
+                    }.navigationTitle(patient.patientName).navigationBarTitleDisplayMode(.inline).toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button() {
+                                dismiss()
+                            } label: {
+                                Image(systemName: "xmark")
+                            }.buttonStyle(.borderedProminent).tint(Color(.nhBlue))
                         }
                     }
-                    .padding(EdgeInsets(top: 30, leading: 10, bottom: 0, trailing: 10))
-                    TimelineView(
-                        timelineCycleCount: patient.cycleCount,
-                        patientStartDate: patient.treatmentStartDate,
-                        cycleLengthInDays: patient.cycleLengthInDays,
-                        timelineEvents: vm.timelineEvents,
-                        chemoEvents: chemoVM.chemotherapyEvents,
-                        selectedCycle: $selectedCycle,
-                        displayPhysiological: $displayPhysiological,
-                        displayActivity: $displayActivity,
-                        displaySleep: $displaySleep,
-                        displaySelfReported: $displaySelfReported
-                    )
-                        .padding(EdgeInsets(top: 0, leading: 10, bottom: 20, trailing: 10))
-                }.navigationTitle(patient.patientName).navigationBarTitleDisplayMode(.inline).toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button() {
-                            dismiss()
-                        } label: {
-                            Image(systemName: "xmark")
-                        }.buttonStyle(.borderedProminent).tint(Color(.nhBlue))
-                    }
                 }
+            }
+            if selectedCycle != -1 {
+                ZStack {
+                    
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation(.spring()) {
+                                selectedCycle = -1
+                            }
+                        }
+                    VStack {
+                        Spacer()
+                        //                    Text(cycle: cycle)
+                        CycleBreakdownView(treatmentStartDate: patient.treatmentStartDate, cycleLength: patient.cycleLengthInDays, selectedCycle: $selectedCycle)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: UIScreen.main.bounds.height * 0.7)
+                            .background(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .shadow(radius: 20)
+                    }
+                    .ignoresSafeArea()
+                    .transition(.move(edge: .bottom))
+                }
+                .animation(.spring(), value: selectedCycle != -1)
             }
         }.task {
             vm.fetchEvents(for: patient.id)

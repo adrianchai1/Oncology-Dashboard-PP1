@@ -13,4 +13,10 @@ struct ActivityDomain: Codable {
     let date: Date
     let type: String
     let value: Double
+    
+    var toString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return "\(formatter.string(from: date)) \(type): \(value)"
+    }
 }

@@ -70,7 +70,9 @@ struct TimelineView: View {
                                 to: patientStartDate
                             )
                             TimelineCycle(cycleNumber: i + 1, cycleStartDate: cycleStart ?? Date(), cycleLength: cycleLengthInDays, isSelected: selectedCycle == i, timelineEvents: timelineEvents, chemoEvents: chemoEvents).contentShape(Rectangle()).onTapGesture {
-                                selectedCycle = i
+                                withAnimation(.spring()) {
+                                    selectedCycle = i
+                                }
                                 
                             }
                             

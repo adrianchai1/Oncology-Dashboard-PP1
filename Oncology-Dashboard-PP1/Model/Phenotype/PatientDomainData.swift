@@ -8,8 +8,8 @@
 import Foundation
 
 struct PatientDomainData {
-    var activity: [[ActivityDomain]]
-    var physiological: [[PhysiologicalDomain]]
+    var activity: [[MetricData]]
+    var physiological: [[MetricData]]
 //    var sleep: [[SleepDomain]]
 //    var selfReported: [[SelfReportedDomain]]
 }

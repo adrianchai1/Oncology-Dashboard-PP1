@@ -9,13 +9,22 @@ import SwiftUI
 import Charts
 
 
+struct DomainLineGraphData {
+    let id = UUID()
+    let title: String
+    let dataPoints: [LinePoint]
+    let color: Color
+}
 
-struct DevianceLineGraph: View {
+struct AllDomainLineGraph: View {
     
     @State private var domainData: [DomainLineGraphData] = []
     var patientPercentages: [PatientPercentages]
     
-    
+    @Binding var displayPhysiological: Bool
+    @Binding var displayActivity: Bool
+    @Binding var displaySleep: Bool
+    @Binding var displaySelfReported: Bool
     
     func convertPatientPercentages() {
         var physiologicalDataPoints: [LinePoint] = []
@@ -37,6 +46,27 @@ struct DevianceLineGraph: View {
             }
         }
         
+        domainData = []
+        if displayPhysiological {
+            domainData.append(DomainLineGraphData(title: "Physiological",
+                                                  dataPoints: physiologicalDataPoints,
+                                                  color: .physiological))
+        }
+        if displaySleep {
+            domainData.append(DomainLineGraphData(title: "Sleep",
+                                                  dataPoints: sleepDataPoints,
+                                                  color: .sleep))
+        }
+        if displayActivity {
+            domainData.append(DomainLineGraphData(title: "Activity",
+                                                  dataPoints: activityDataPoints,
+                                                  color: .activity))
+        }
+        if displaySelfReported {
+            domainData.append(DomainLineGraphData(title: "Self Reported",
+                                                  dataPoints: selfReportedDataPoints,
+                                                  color: .selfReported))
+        }
     }
     
     var body: some View {
@@ -47,13 +77,13 @@ struct DevianceLineGraph: View {
             ForEach(Array(domainData.dataPoints.enumerated()), id: \.element.id) { pointIndex, dataPoints in
                 LineMark(
                     x: .value("Index", dataPoints.date),
-                    y: .value("Amount", min(dataPoints.value, 100)),
+                    y: .value("Amount", max(-100, min(dataPoints.value, 100))),
                     series: .value("Domain", domainData.title)
                 )
                 .foregroundStyle(domainData.color)
                 PointMark(
                     x: .value("Index", dataPoints.date),
-                    y: .value("Amount", min(dataPoints.value, 100))
+                    y: .value("Amount", max(-100, min(dataPoints.value, 100)))
                 )
                 .symbol(Circle())
                 .foregroundStyle(domainData.color)
@@ -64,6 +94,31 @@ struct DevianceLineGraph: View {
 //                        .font(.caption)
 //                        .foregroundColor(getColorFromValue(value: amount.value))
 //                }
+        }
+        .chartYAxis {
+            AxisMarks { value in
+                AxisGridLine()
+                AxisValueLabel()
+                    .font(.system(size: 16, weight: .bold))
+            }
+        }
+        .onAppear() {
+            convertPatientPercentages()
+        }
+        .onChange(of: patientPercentages) {
+            convertPatientPercentages()
+        }
+        .onChange(of: displayPhysiological) {
+            convertPatientPercentages()
+        }
+        .onChange(of: displaySleep) {
+            convertPatientPercentages()
+        }
+        .onChange(of: displayActivity) {
+            convertPatientPercentages()
+        }
+        .onChange(of: displaySelfReported) {
+            convertPatientPercentages()
         }
 //        .frame(
 //            width: max(CGFloat(dollarAmounts.count) * barWidth, UIScreen.main.bounds.width - 20),
@@ -116,10 +171,10 @@ struct DevianceLineGraph: View {
 //    return domainData
 //}
 
-struct DevianceLineGraphPreview: View {
+struct AllDomainLineGraphPreview: View {
     var patientPercentages = [
         PatientPercentages(id: 1, date: Date(), patientId: 1, physiological: 20.0, activity: 15.0, sleep: nil, selfReported: 15.0),
-        PatientPercentages(id: 2, date: Date().addingTimeInterval(10), patientId: 1, physiological: 18.0, activity: nil, sleep: 9.0, selfReported: 18.0),
+        PatientPercentages(id: 2, date: Date().addingTimeInterval(10), patientId: 1, physiological: 18.0, activity: nil, sleep: 14.0, selfReported: 18.0),
         PatientPercentages(id: 3, date: Date().addingTimeInterval(20), patientId: 1, physiological: 19.0, activity: 13.0, sleep: 6.0, selfReported: 20.0),
     ]
     @State var displayPhysiological: Bool = true
@@ -127,13 +182,13 @@ struct DevianceLineGraphPreview: View {
     @State var displaySleep: Bool = true
     @State var displaySelfReported: Bool = true
     var body: some View {
-        LineGraph(patientPercentages: patientPercentages, displayPhysiological: $displayPhysiological, displayActivity: $displayActivity, displaySleep: $displaySleep, displaySelfReported: $displaySelfReported)
+        AllDomainLineGraph(patientPercentages: patientPercentages, displayPhysiological: $displayPhysiological, displayActivity: $displayActivity, displaySleep: $displaySleep, displaySelfReported: $displaySelfReported)
             .padding(.horizontal, 400)
             .padding(.vertical, 300)
     }
 }
 
 #Preview {
-    DevianceLineGraphPreview()
+    AllDomainLineGraphPreview()
     
 }

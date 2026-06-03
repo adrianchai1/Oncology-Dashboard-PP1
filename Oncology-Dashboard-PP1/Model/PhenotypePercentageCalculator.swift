@@ -11,6 +11,7 @@ struct MetricData {
     let date: Date
     let value: Double
     var deviationPercentage: Double = 0.0
+    var type: String = ""
 }
 
 

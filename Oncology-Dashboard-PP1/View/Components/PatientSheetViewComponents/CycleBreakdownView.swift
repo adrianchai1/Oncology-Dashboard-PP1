@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CycleBreakdownView: View {
     
-    
+    var patientId: Int
     var treatmentStartDate: Date
     var cycleLength: Int
     @Binding var selectedCycle: Int
@@ -18,7 +18,7 @@ struct CycleBreakdownView: View {
     @State var cycleEndDate = Date()
     
     @State private var vm: CycleBreakdownViewViewModel? = nil
-    @State private var mostConcerningMetrics: MostConcerningMetrics? = nil
+    @State private var mostConcerningMetrics: [MostConcerningMetrics] = []
     var forceConcerningMetrics = false
     
     var body: some View {
@@ -44,12 +44,15 @@ struct CycleBreakdownView: View {
                     Text("Data Loading")
                 }
                 else {
-                   Text("Most Concering Metrics")
-                    if mostConcerningMetrics != nil && mostConcerningMetrics!.mostConcern != nil {
-                        ForEach(mostConcerningMetrics!.mostConcern!, id: \.title) { concern in
-                            MostConcernView(concern: concern)
+                    HStack {
+                        VStack {
+                            Text("Most Concerning Metrics:")
+                            MostConcerningLineGraph(mostConcerningMetrics: mostConcerningMetrics)
+                                .frame(width: 600, height: 300)
                         }
+                        Spacer()
                     }
+                    .padding(.horizontal)
                 }
             }
             Spacer()
@@ -68,23 +71,13 @@ struct CycleBreakdownView: View {
             
             vm = CycleBreakdownViewViewModel(cycleStartDate: cycleStartDate, cycleEndDate: cycleEndDate)
             
-            await vm?.fetchPatientCycleData(for: 1)
-            
-            do {
-                // FOR TESTING PURPOSES
-                if forceConcerningMetrics {
-                    mostConcerningMetrics = MostConcerningMetrics(mostConcern: [
-                        MostConcern(title: "Steps", value: 25000, unit: "steps", domain: "Activity", date: "2025-06-02", good: true),
-                        MostConcern(title: "Sleep Efficiency", value: 67, unit: "%", domain: "Sleep", date: "2025-06-01", good: false),
-                        MostConcern(title: "Energy Burned", value: 2000, unit: "kg", domain: "Activity", date: "2025-06-02", good: true)
-                    ])
+            if vm != nil {
+                do {
+                    mostConcerningMetrics = try await vm!.extractMostConcerningMetrics(for: patientId)
                 }
-                else {
-                    mostConcerningMetrics = try await vm?.extractMostConcerningMetrics()
+                catch {
+                    print(error)
                 }
-            }
-            catch {
-                print("Apple Intelligence \(error)")
             }
         }
     }
@@ -94,7 +87,7 @@ struct CycleBreakdownView: View {
 struct CycleBreakdownViewPreview: View {
     @State var selectedCycle = 0
     var body: some View {
-        CycleBreakdownView(treatmentStartDate: Calendar.current.date(from: DateComponents(year: 2026, month: 4, day: 1)) ?? Date(), cycleLength: 14, selectedCycle: $selectedCycle, forceConcerningMetrics: true)
+        CycleBreakdownView(patientId: 1, treatmentStartDate: Calendar.current.date(from: DateComponents(year: 2026, month: 4, day: 1)) ?? Date(), cycleLength: 14, selectedCycle: $selectedCycle, forceConcerningMetrics: true)
     }
 }
 

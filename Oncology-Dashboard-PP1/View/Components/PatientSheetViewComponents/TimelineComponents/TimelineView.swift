@@ -80,7 +80,7 @@ struct TimelineView: View {
                         }
                     }
                     
-                    LineGraph(patientPercentages: vm.patientPercentages, displayPhysiological: $displayPhysiological, displayActivity: $displayActivity, displaySleep: $displaySleep, displaySelfReported: $displaySelfReported)
+                    AllDomainLineGraph(patientPercentages: vm.patientPercentages, displayPhysiological: $displayPhysiological, displayActivity: $displayActivity, displaySleep: $displaySleep, displaySelfReported: $displaySelfReported)
                         .padding(.vertical, 50)
                         .padding(.horizontal, 20)
                         .allowsHitTesting(false)

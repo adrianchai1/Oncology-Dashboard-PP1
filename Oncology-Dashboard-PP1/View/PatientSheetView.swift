@@ -86,7 +86,7 @@ struct PatientSheetView: View {
                     VStack {
                         Spacer()
                         //                    Text(cycle: cycle)
-                        CycleBreakdownView(treatmentStartDate: patient.treatmentStartDate, cycleLength: patient.cycleLengthInDays, selectedCycle: $selectedCycle)
+                        CycleBreakdownView(patientId: patient.id, treatmentStartDate: patient.treatmentStartDate, cycleLength: patient.cycleLengthInDays, selectedCycle: $selectedCycle)
                             .frame(maxWidth: .infinity)
                             .frame(height: UIScreen.main.bounds.height * 0.7)
                             .background(.white)

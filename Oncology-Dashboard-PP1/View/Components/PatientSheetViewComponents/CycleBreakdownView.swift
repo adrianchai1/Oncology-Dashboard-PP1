@@ -40,18 +40,23 @@ struct CycleBreakdownView: View {
                     
             }
             if vm != nil {
-                if vm!.patientDomainData == nil {
+                if vm!.mostConcerningMetrics.isEmpty {
                     Text("Data Loading")
                 }
                 else {
-                    HStack {
+                    HStack(spacing: 20) {
                         VStack {
                             Text("Most Concerning Metrics:")
-                            MostConcerningLineGraph(mostConcerningMetrics: mostConcerningMetrics)
-                                .frame(width: 600, height: 300)
+                            MostConcerningLineGraph(mostConcerningMetrics: vm?.mostConcerningMetrics ?? [])
                         }
                         Spacer()
+                        
+                        VStack {
+                            Text("Sleep Score: (%)")
+                            GeneralLineGraph(dataPoints: vm?.sleepDataPoints ?? [], color: .sleep)
+                        }
                     }
+                    .frame(height: 300)
                     .padding(.horizontal)
                 }
             }
@@ -73,7 +78,7 @@ struct CycleBreakdownView: View {
             
             if vm != nil {
                 do {
-                    mostConcerningMetrics = try await vm!.extractMostConcerningMetrics(for: patientId)
+                    try await vm!.initCycleData(patientId: patientId)
                 }
                 catch {
                     print(error)

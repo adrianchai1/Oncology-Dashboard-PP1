@@ -17,6 +17,8 @@ class CycleBreakdownViewViewModel {
     var cycleEndDate: Date
     
     var patientDomainData: PatientDomainData? = nil
+    var mostConcerningMetrics: [MostConcerningMetrics] = []
+    var sleepDataPoints: [LinePoint] = []
     
     init(cycleStartDate: Date, cycleEndDate: Date) {
         self.cycleStartDate = cycleStartDate
@@ -197,5 +199,26 @@ class CycleBreakdownViewViewModel {
         }
         
         return mostConcerningMetrics
+    }
+    
+    private func getSleepData(patientId: Int) async throws -> [LinePoint] {
+        // TODO: PULL FROM DATA
+        return [
+            LinePoint(date: Date().addingTimeInterval(-86400 * 9), value: 10),
+            LinePoint(date: Date().addingTimeInterval(-86400 * 8), value: 15),
+            LinePoint(date: Date().addingTimeInterval(-86400 * 7), value: 12),
+            LinePoint(date: Date().addingTimeInterval(-86400 * 6), value: 13),
+            LinePoint(date: Date().addingTimeInterval(-86400 * 5), value: 30),
+            LinePoint(date: Date().addingTimeInterval(-86400 * 4), value: 5),
+            LinePoint(date: Date().addingTimeInterval(-86400 * 3), value: -10),
+            LinePoint(date: Date().addingTimeInterval(-86400 * 2), value: -30),
+            LinePoint(date: Date().addingTimeInterval(-86400 * 1), value: -20),
+            LinePoint(date: Date(), value: -15)
+        ]
+    }
+    
+    func initCycleData(patientId: Int) async throws {
+        self.mostConcerningMetrics = try await extractMostConcerningMetrics(for: patientId)
+        self.sleepDataPoints = try await getSleepData(patientId: patientId)
     }
 }

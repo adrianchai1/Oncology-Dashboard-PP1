@@ -69,6 +69,50 @@ class TimelineViewViewModel {
         return activityPercentageDeviance
     }
     
+    private func getSleepPercentageDeviance(patientId: Int) async throws -> [MetricData] {
+        let sleepData = try await fetchSleepData(for: patientId)
+        // Only use data after the start date
+        let cycleActivityData = sleepData.filter { $0.startDate >= self.patientTreatmentStartDate }
+        // Group by the types
+        
+        let groupedByState = Dictionary(grouping: cycleActivityData) { $0.state }
+                .sorted { $0.key < $1.key }
+
+        var percentageDeviances: [[MetricData]] = []
+
+        for (_, entries) in groupedByState {
+            // Group entries by day
+            let groupedByDay = Dictionary(grouping: entries) { entry -> Date in
+                Calendar.current.startOfDay(for: entry.startDate)
+            }
+
+            // Sum duration in minutes per day
+            let metricData = groupedByDay.map { (day, dayEntries) -> MetricData in
+                let totalMinutes = dayEntries.reduce(0.0) { sum, entry in
+                    sum + entry.endDate.timeIntervalSince(entry.startDate) / 60.0
+                }
+                return MetricData(date: day, value: totalMinutes)
+            }
+            .sorted { $0.date < $1.date }
+
+            let newMetricData = calculateDayByDayDomainDeviation(data: metricData)
+            percentageDeviances.append(newMetricData)
+        }
+
+        let sleepPercentageDeviance = calculateDomainPercentageDeviance(
+            data: percentageDeviances,
+            startDate: self.patientTreatmentStartDate,
+            endDate: self.patientTreatmentEndDate
+        )
+        
+        print("\nOVERALL PERCENTAGE DEVIANCE FROM BASELINE:")
+        for i in sleepPercentageDeviance {
+            print("\(i.date) : \(i.deviationPercentage)")
+        }
+        
+        return sleepPercentageDeviance
+    }
+    
     private func getPhysiologicalPercentageDeviance(patientId: Int) async throws -> [MetricData] {
         let physiologicalData = try await fetchPhysiologicalData(for: patientId)
         // Only use data after the start date
@@ -151,7 +195,7 @@ class TimelineViewViewModel {
                             // Grab the data
                             let physiologicalDeviance = try await self.getPhysiologicalPercentageDeviance(patientId: patientId)
                             let activityDeviance = try await self.getActivityPercentageDeviance(patientId: patientId)
-//                            let sleepDeviance = []
+                            let sleepDeviance = try await self.getSleepPercentageDeviance(patientId: patientId)
 //                            let selfReportedDeviance = []
                             
                             let calendar = Calendar.current
@@ -167,6 +211,10 @@ class TimelineViewViewModel {
                                 let activityPercentage = activityDeviance.first {
                                     Calendar.current.isDate($0.date, inSameDayAs: currentDate)
                                 }
+                                
+                                let sleepPercentage = sleepDeviance.first {
+                                    Calendar.current.isDate($0.date, inSameDayAs: currentDate)
+                                }
 //                                let sleepPercentage = sleepDeviance.filter { $0.date == currentDate }
 //                                let selfReportedPercentage = selfReportedDeviance.filter { $0.date == currentDate }
                                 
@@ -177,7 +225,7 @@ class TimelineViewViewModel {
                                     patientId: patientId,
                                     physiological: physiologicalPercentage?.deviationPercentage,
                                     activity: activityPercentage?.deviationPercentage,
-                                    sleep: nil,
+                                    sleep: sleepPercentage?.deviationPercentage,
                                     selfReported: nil
                                 ))
                                 

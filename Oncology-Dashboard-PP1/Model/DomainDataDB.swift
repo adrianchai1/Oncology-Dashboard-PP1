@@ -23,6 +23,17 @@ struct ActivityDomainDTO: Codable {
     let value: Double
 }
 
+struct SleepDomainDTO: Codable {
+    let userid: Int
+    let entryid: Int
+    let type: String
+    let state: String
+    let start_date: String
+    let start_time: String
+    let end_date: String
+    let end_time: String
+}
+
 
 
 //    do {
@@ -31,8 +42,6 @@ struct ActivityDomainDTO: Codable {
 //        print(error)
 //    }
 func fetchPhysiologicalData(for patientId: Int) async throws -> [PhysiologicalDomain] {
-    
-    
     guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/physiological") else {
         return []
     }
@@ -59,8 +68,6 @@ func fetchPhysiologicalData(for patientId: Int) async throws -> [PhysiologicalDo
 }
 
 func fetchActivityData(for patientId: Int) async throws -> [ActivityDomain] {
-    
-    
     guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/activity") else {
         return []
     }
@@ -84,4 +91,33 @@ func fetchActivityData(for patientId: Int) async throws -> [ActivityDomain] {
     
     return mappedPhysiologicalDomain
 
+}
+
+func fetchSleepData(for patientId: Int) async throws -> [SleepDomain] {
+    guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/sleep") else {
+        return []
+    }
+
+    let (data, _) = try await URLSession.shared.data(from: url)
+
+    let decodedDTOs = try JSONDecoder().decode([SleepDomainDTO].self, from: data)
+
+    let formatter = DateFormatter()
+    formatter.dateFormat = "d/M/yyyy HH:mm"
+
+    let mappedSleepDomain = decodedDTOs.map { dto in
+        let startDate = formatter.date(from: "\(dto.start_date) \(dto.start_time)") ?? Date()
+        let endDate = formatter.date(from: "\(dto.end_date) \(dto.end_time)") ?? Date()
+
+        return SleepDomain(
+            id: dto.entryid,
+            userId: dto.userid,
+            type: dto.type,
+            state: dto.state,
+            startDate: startDate,
+            endDate: endDate
+        )
+    }
+
+    return mappedSleepDomain
 }

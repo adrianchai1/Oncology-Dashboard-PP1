@@ -15,7 +15,7 @@ struct RadarChartView: View {
         GeometryReader { geo in
             let size = min(geo.size.width, geo.size.height)
             let center = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
-            let radius = size / 2.5
+            let radius = size / 2.25
             let axisCount = labels.count
 
             ZStack {
@@ -51,7 +51,7 @@ struct RadarChartView: View {
                 }
             }
         }
-        .frame(height: 280)
+        .frame(height: 320)
     }
 
     private func point(index: Int, value: Double, count: Int, center: CGPoint, radius: CGFloat) -> CGPoint {

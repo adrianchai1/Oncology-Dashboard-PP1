@@ -29,9 +29,13 @@ struct PatientSheetView: View {
         ZStack {
             NavigationStack {
                 ScrollView(.vertical) {
-                    HStack {
+                    HStack(alignment: .top, spacing: 10) {
                         RadarGraphView()
-                        Spacer()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 450)
+                        SideCardView(patientId: patient.id)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 450)
                     }
                     
                     VStack {

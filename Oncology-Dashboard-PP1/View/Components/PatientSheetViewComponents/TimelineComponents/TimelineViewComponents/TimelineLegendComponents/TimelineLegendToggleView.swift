@@ -12,9 +12,11 @@ struct TimelineLegendToggleView: View {
     @Binding var selected: Bool
     var color: Color
     var title: String
+    var setAll: () -> Void
     
     var body: some View {
         Button(action: {
+            setAll()
             selected = !selected
         }) {
             HStack {
@@ -51,7 +53,7 @@ struct TimelineLegendToggleView: View {
 struct TimelineLegendToggleViewPreview: View {
     @State var test = true
     var body: some View {
-        TimelineLegendToggleView(selected: $test, color: .physiological, title: "Physiological")
+        TimelineLegendToggleView(selected: $test, color: .physiological, title: "Physiological", setAll: {})
     }
 }
 

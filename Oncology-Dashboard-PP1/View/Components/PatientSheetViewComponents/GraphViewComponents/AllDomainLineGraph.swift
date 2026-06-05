@@ -77,13 +77,13 @@ struct AllDomainLineGraph: View {
             ForEach(Array(domainData.dataPoints.enumerated()), id: \.element.id) { pointIndex, dataPoints in
                 LineMark(
                     x: .value("Index", dataPoints.date),
-                    y: .value("Amount", max(-100, min(dataPoints.value, 100))),
+                    y: .value("Amount", max(-100, min(dataPoints.value, 150))),
                     series: .value("Domain", domainData.title)
                 )
                 .foregroundStyle(domainData.color)
                 PointMark(
                     x: .value("Index", dataPoints.date),
-                    y: .value("Amount", max(-100, min(dataPoints.value, 100)))
+                    y: .value("Amount", max(-100, min(dataPoints.value, 150)))
                 )
                 .symbol(Circle())
                 .foregroundStyle(domainData.color)

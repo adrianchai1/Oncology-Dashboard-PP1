@@ -14,12 +14,19 @@ struct TimelineLegendView: View {
     @Binding var sleep: Bool
     @Binding var selfReported: Bool
     
+    private func setAll() {
+        physiological = false
+        activity = false
+        sleep = false
+        selfReported = false
+    }
+    
     var body: some View {
         HStack {
-            TimelineLegendToggleView(selected: $activity, color: .activity, title: "Activity")
-            TimelineLegendToggleView(selected: $sleep, color: .sleep, title: "Sleep")
-            TimelineLegendToggleView(selected: $selfReported, color: .selfReported, title: "Self Reported")
-            TimelineLegendToggleView(selected: $physiological, color: .physiological, title: "Physiological")
+            TimelineLegendToggleView(selected: $activity, color: .activity, title: "Activity", setAll: setAll)
+            TimelineLegendToggleView(selected: $sleep, color: .sleep, title: "Sleep", setAll: setAll)
+            TimelineLegendToggleView(selected: $selfReported, color: .selfReported, title: "Self Reported", setAll: setAll)
+            TimelineLegendToggleView(selected: $physiological, color: .physiological, title: "Physiological", setAll: setAll)
         }
     }
 }

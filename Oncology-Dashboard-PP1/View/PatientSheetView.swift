@@ -19,10 +19,10 @@ struct PatientSheetView: View {
     
     @State var showNewEventForm = false
     
-    @State var displayPhysiological: Bool = true
+    @State var displayPhysiological: Bool = false
     @State var displayActivity: Bool = true
-    @State var displaySleep: Bool = true
-    @State var displaySelfReported: Bool = true
+    @State var displaySleep: Bool = false
+    @State var displaySelfReported: Bool = false
     
     var body: some View {
         

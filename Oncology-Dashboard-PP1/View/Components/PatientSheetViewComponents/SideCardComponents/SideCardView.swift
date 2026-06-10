@@ -28,8 +28,9 @@ struct SideCardView: View {
                 Spacer()
                 Text("Sleep Scores Measured from 0 to 100").font(.caption).foregroundStyle(.secondary)
             } else {
+                MoodWholisticChartView(patient: patientId)
                 Spacer()
-                Text("Need to figure out how we are displaying this").font(.caption).foregroundStyle(.secondary)
+                Text("Mood scores from 1 to 7").font(.caption).foregroundStyle(.secondary)
             }
             
         }

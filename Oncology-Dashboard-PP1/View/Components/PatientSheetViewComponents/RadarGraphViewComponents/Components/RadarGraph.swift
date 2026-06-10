@@ -65,7 +65,6 @@ struct RadarChartView: View {
 }
 
 struct RadarPolygon: Shape {
-
     let values: [Double]
     let center: CGPoint
     let radius: CGFloat

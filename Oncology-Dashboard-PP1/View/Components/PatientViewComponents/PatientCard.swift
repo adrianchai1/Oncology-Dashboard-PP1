@@ -20,7 +20,7 @@ struct PatientCard: View {
             HStack {
                 VStack(alignment: .leading) {
                     Text(patientName).font(.title).fontWeight(.bold)
-                    Text("Cycle \(cycleNumber)").font(.title2).fontWeight(.semibold).foregroundStyle(Color(.red))
+                    Text("Cycle \(cycleNumber)").font(.title2).fontWeight(.semibold).foregroundStyle(Color(.nhBlue))
                 }
                 Spacer()
                 VStack(alignment: .trailing) {

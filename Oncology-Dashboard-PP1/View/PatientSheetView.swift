@@ -109,7 +109,7 @@ struct PatientSheetView: View {
                 .animation(.spring(), value: selectedCycle != -1)
             }
         }.task {
-            vm.fetchEvents(for: patient.id)
+            await vm.loadEvents(for: patient.id)
             chemoVM.fetchChemotherapyEvents(for: patient.id)
         }.sheet(isPresented: $showNewEventForm) {
             NewTimelineEventView()

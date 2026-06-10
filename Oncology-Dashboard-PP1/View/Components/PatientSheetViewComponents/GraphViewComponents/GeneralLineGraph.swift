@@ -11,8 +11,6 @@ import Charts
 
 
 struct GeneralLineGraph: View {
-    
-    
     var dataPoints: [LinePoint]
     var color: Color
     

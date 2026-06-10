@@ -8,12 +8,6 @@
 import Foundation
 import Observation
 
-struct MoodPoint: Identifiable {
-    let id = UUID()
-    let date: Date
-    let mood: Int
-}
-
 @Observable
 class MoodWholisticChartViewViewModel {
 

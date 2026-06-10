@@ -10,6 +10,15 @@ import SwiftUI
 struct RadarChartView: View {
     let datasets: [RadarDataset]
     let labels: [String]
+    
+    private func point(index: Int, value: Double, count: Int, center: CGPoint, radius: CGFloat) -> CGPoint {
+        let angle = (Double(index) / Double(count)) * 2 * .pi - .pi / 2
+
+        return CGPoint(
+            x: center.x + cos(angle) * radius * value,
+            y: center.y + sin(angle) * radius * value
+        )
+    }
 
     var body: some View {
         GeometryReader { geo in
@@ -52,33 +61,5 @@ struct RadarChartView: View {
             }
         }
         .frame(height: 320)
-    }
-
-    private func point(index: Int, value: Double, count: Int, center: CGPoint, radius: CGFloat) -> CGPoint {
-        let angle = (Double(index) / Double(count)) * 2 * .pi - .pi / 2
-
-        return CGPoint(
-            x: center.x + cos(angle) * radius * value,
-            y: center.y + sin(angle) * radius * value
-        )
-    }
-}
-
-struct RadarPolygon: Shape {
-    let values: [Double]
-    let center: CGPoint
-    let radius: CGFloat
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        for i in values.indices {
-            let angle = (Double(i) / Double(values.count)) * 2 * .pi - .pi / 2
-            let point = CGPoint(
-                x: center.x + cos(angle) * radius * values[i],
-                y: center.y + sin(angle) * radius * values[i]
-            )
-            i == 0 ? path.move(to: point) : path.addLine(to: point)
-        }
-        path.closeSubpath()
-        return path
     }
 }

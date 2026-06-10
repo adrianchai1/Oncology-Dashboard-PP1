@@ -20,8 +20,7 @@ struct SideCardView: View {
                 ForEach(domains, id: \.self) { domain in
                     Text(domain)
                 }
-            }
-            .pickerStyle(.segmented)
+            }.pickerStyle(.segmented)
             
             if selectedDomain == "Sleep" {
                 SleepWholisticChartView(patient: patientId)
@@ -39,8 +38,7 @@ struct SideCardView: View {
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(.white.opacity(0.25), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(.white.opacity(0.25), lineWidth: 1)
         }
         .shadow(radius: 12)
         .padding()

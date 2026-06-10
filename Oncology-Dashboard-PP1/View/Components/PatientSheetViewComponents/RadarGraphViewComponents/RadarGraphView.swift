@@ -15,17 +15,12 @@ struct RadarDataset {
 
 struct RadarGraphView: View {
     let patient: Patient
+    let colors: [Color] = [.nhGray, .nhBlue, .nhGreen]
 
-    @State private var viewModel = RadarGraphViewViewModel()
+    @State private var vm = RadarGraphViewViewModel()
 
     var radarDatasets: [RadarDataset] {
-        let radarCycleData = viewModel.getLatestThreeCycleRadarData(
-            latestCycle: patient.cycleCount,
-            treatmentStartDate: patient.treatmentStartDate,
-            cycleDurationDays: patient.cycleLengthInDays
-        )
-
-        let colors: [Color] = [.nhGray, .nhBlue, .nhGreen]
+        let radarCycleData = vm.getLatestThreeCycleRadarData(latestCycle: patient.cycleCount, treatmentStartDate: patient.treatmentStartDate, cycleDurationDays: patient.cycleLengthInDays)
 
         return radarCycleData.enumerated().map { pair in
             let index = pair.offset
@@ -61,30 +56,22 @@ struct RadarGraphView: View {
                 Spacer()
                 Text("Higher is better").font(.caption).foregroundStyle(.secondary)
             }
-
-            RadarChartView(
-                datasets: radarDatasets,
-                labels: ["Sleep", "Physiological", "Activity", "Reported"]
-            )
+            RadarChartView(datasets: radarDatasets, labels: ["Sleep", "Physiological", "Activity", "Reported"])
         }
         .padding(20)
-        .frame(
-            maxWidth: .infinity,
-            maxHeight: .infinity,
-            alignment: .topLeading
-        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(.white.opacity(0.25), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(.white.opacity(0.25), lineWidth: 1)
         }
         .shadow(radius: 12)
         .padding()
         .task {
-            await viewModel.loadSleepData(patientId: patient.id)
-            await viewModel.loadPhysiologicalData(patientId: patient.id)
-            await viewModel.loadActivityData(patientId: patient.id)
+            await vm.loadSleepData(patientId: patient.id)
+            await vm.loadPhysiologicalData(patientId: patient.id)
+            await vm.loadActivityData(patientId: patient.id)
+            await vm.loadMoodData(patientId: patient.id)
         }
     }
 }

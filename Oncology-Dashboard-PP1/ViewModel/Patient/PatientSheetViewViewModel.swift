@@ -8,52 +8,22 @@
 import Foundation
 import Observation
 
+@MainActor
 @Observable
 class PatientSheetViewViewModel {
     var timelineEvents: [TimelineEvent] = []
+    var errorMessage: String?
 
-    func fetchEvents(for patientId: Int) {
-        guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/events") else {
-            return
+    func loadEvents(for patientId: Int) async {
+        do {
+            timelineEvents = try await fetchTimelineEventsData(for: patientId)
+            errorMessage = nil
+
+            print("Loaded events:", timelineEvents.count)
+        } catch {
+            errorMessage = error.localizedDescription
+            print("Failed to load events:", error)
         }
-
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                print("Event fetch error:", error)
-                return
-            }
-
-            guard let data = data else {
-                print("No event data")
-                return
-            }
-
-            do {
-                let decodedDTOs = try JSONDecoder().decode([TimelineEventDTO].self, from: data)
-
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd"
-
-                let mappedEvents = decodedDTOs.map { dto in
-                    TimelineEvent(
-                        id: dto.id,
-                        eventId: EventID(rawValue: dto.event_id) ?? .other,
-                        date: formatter.date(from: dto.event_date) ?? Date(),
-                        notes: dto.notes,
-                        doctorId: Int(dto.doctor_id) ?? 0,
-                        title: dto.title
-                    )
-                }
-
-                DispatchQueue.main.async {
-                    self.timelineEvents = mappedEvents
-                    print("Loaded events:", self.timelineEvents.count)
-                }
-
-            } catch {
-                print("Event decoding error:", error)
-            }
-        }.resume()
     }
 }
 

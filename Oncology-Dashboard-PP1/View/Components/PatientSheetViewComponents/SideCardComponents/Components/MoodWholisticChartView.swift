@@ -11,21 +11,15 @@ import Charts
 struct MoodWholisticChartView: View {
     let patient: Int
 
-    @State private var viewModel = MoodWholisticChartViewViewModel()
+    @State private var vm = MoodWholisticChartViewViewModel()
 
     var body: some View {
         ScrollView(.horizontal) {
-            Chart(viewModel.moodPoints) { point in
-                LineMark(
-                    x: .value("Date", point.date),
-                    y: .value("Mood", point.mood)
-                )
+            Chart(vm.moodPoints) { point in
+                LineMark(x: .value("Date", point.date), y: .value("Mood", point.mood))
                 .foregroundStyle(.selfReported)
 
-                PointMark(
-                    x: .value("Date", point.date),
-                    y: .value("Mood", point.mood)
-                )
+                PointMark(x: .value("Date", point.date), y: .value("Mood", point.mood))
                 .foregroundStyle(.selfReported)
             }
             .chartYScale(domain: 1...7)
@@ -33,15 +27,12 @@ struct MoodWholisticChartView: View {
                 AxisMarks(values: [1, 2, 3, 4, 5, 6, 7])
             }
             .chartXScale(range: .plotDimension(padding: 24))
-            .frame(
-                width: max(CGFloat(viewModel.moodPoints.count) * 55, 380),
-                height: 220
-            )
+            .frame(width: max(CGFloat(vm.moodPoints.count) * 55, 380), height: 220)
             .padding(.horizontal, 16)
             .padding(.top, 12)
         }
         .task {
-            await viewModel.loadMoodData(patientId: patient)
+            await vm.loadMoodData(patientId: patient)
         }
     }
 }

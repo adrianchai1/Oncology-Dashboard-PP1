@@ -20,16 +20,16 @@ struct SideCardView: View {
                 ForEach(domains, id: \.self) { domain in
                     Text(domain)
                 }
-            }
-            .pickerStyle(.segmented)
+            }.pickerStyle(.segmented)
             
             if selectedDomain == "Sleep" {
                 SleepWholisticChartView(patient: patientId)
                 Spacer()
                 Text("Sleep Scores Measured from 0 to 100").font(.caption).foregroundStyle(.secondary)
             } else {
+                MoodWholisticChartView(patient: patientId)
                 Spacer()
-                Text("Need to figure out how we are displaying this").font(.caption).foregroundStyle(.secondary)
+                Text("Mood scores from 1 to 7").font(.caption).foregroundStyle(.secondary)
             }
             
         }
@@ -38,8 +38,7 @@ struct SideCardView: View {
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(.white.opacity(0.25), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(.white.opacity(0.25), lineWidth: 1)
         }
         .shadow(radius: 12)
         .padding()

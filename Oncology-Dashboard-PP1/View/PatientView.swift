@@ -45,7 +45,7 @@ struct PatientView: View {
             }
         }
         .task {
-            vm.fetchPatients()
+            await vm.loadPatients()
         }
         .fullScreenCover(item: $selectedPatient) { selected in
             PatientSheetView(patient: selected)

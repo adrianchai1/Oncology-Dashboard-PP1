@@ -7,34 +7,6 @@
 
 import Foundation
 
-struct PhysiologicalDomainDTO: Codable {
-    let entryid: Int
-    let userid: Int
-    let date: String
-    let type: String
-    let value: Double
-}
-
-struct ActivityDomainDTO: Codable {
-    let entryid: Int
-    let userid: Int
-    let date: String
-    let type: String
-    let value: Double
-}
-
-struct SleepDomainDTO: Codable {
-    let userid: Int
-    let entryid: Int
-    let type: String
-    let state: String
-    let start_date: String
-    let start_time: String
-    let end_date: String
-    let end_time: String
-}
-
-
 
 //    do {
 //        let physiologicalData = try await fetchPhysiologicalData(for: patientId)
@@ -118,6 +90,27 @@ func fetchSleepData(for patientId: Int) async throws -> [SleepDomain] {
             endDate: endDate
         )
     }
-
     return mappedSleepDomain
+}
+
+
+
+func fetchMoodData(for patientId: Int) async throws -> [MoodDomain] {
+    guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/selfreported") else {
+        return []
+    }
+
+    let (data, _) = try await URLSession.shared.data(from: url)
+    let decodedDTOs = try JSONDecoder().decode([MoodDomainDTO].self, from: data)
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd"
+    let mappedMoodDomain = decodedDTOs.map { dto in
+        MoodDomain(
+            id: dto.entryid,
+            userId: dto.userid,
+            date: formatter.date(from: dto.entry_date) ?? Date(),
+            mood: dto.mood
+        )
+    }
+    return mappedMoodDomain
 }

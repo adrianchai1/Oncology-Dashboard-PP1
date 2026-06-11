@@ -30,7 +30,7 @@ struct PatientSheetView: View {
             NavigationStack {
                 ScrollView(.vertical) {
                     HStack(alignment: .top, spacing: 10) {
-                        RadarGraphView()
+                        RadarGraphView(patient: patient)
                             .frame(maxWidth: .infinity)
                             .frame(height: 450)
                         SideCardView(patientId: patient.id)
@@ -41,16 +41,22 @@ struct PatientSheetView: View {
                     VStack {
                         HStack {
                             TimelineLegendView(physiological: $displayPhysiological, activity: $displayActivity, sleep: $displaySleep, selfReported: $displaySelfReported)
+                            Text("Graph shows deviation from cycle 1 baseline").font(.caption).foregroundStyle(.secondary)
                             Spacer()
                             TimelineEventLegendView()
                             
-                            Button(action: {
+                            Button {
                                 showNewEventForm = true
-                            }) {
-                                Image(systemName: "plus.circle.fill")
-                                    .font(.system(size: 40))
-                                    .foregroundStyle(.green)
+                            } label: {
+                                Image(systemName: "plus")
+                                    .font(.title2.bold())
+                                    .foregroundStyle(.white)
+                                    .padding(8)
                             }
+                            .background(
+                                Circle().fill(.nhGreen)
+                            )
+                            .glassEffect()
                         }
                         .padding(EdgeInsets(top: 30, leading: 10, bottom: 0, trailing: 10))
                         TimelineView(
@@ -103,7 +109,7 @@ struct PatientSheetView: View {
                 .animation(.spring(), value: selectedCycle != -1)
             }
         }.task {
-            vm.fetchEvents(for: patient.id)
+            await vm.loadEvents(for: patient.id)
             chemoVM.fetchChemotherapyEvents(for: patient.id)
         }.sheet(isPresented: $showNewEventForm) {
             NewTimelineEventView()

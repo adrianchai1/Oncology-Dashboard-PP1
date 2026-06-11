@@ -15,6 +15,7 @@ struct TimelineCycle: View {
     let isSelected: Bool
     let timelineEvents: [TimelineEvent]
     let chemoEvents: [ChemotherapyEvent]
+    let vm = TimelineCycleViewModel()
 
     var cycleEndDate: Date {
         Calendar.current.date(byAdding: .day, value: cycleLength, to: cycleStartDate) ?? Date()
@@ -29,52 +30,14 @@ struct TimelineCycle: View {
     @State private var selectedEvent: TimelineEvent?
     
     
-    private func formatDate(date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd/MM/yyyy"
-        return dateFormatter.string(from: date)
-    }
     
-    private func groupEvents(timelineEvents: [TimelineEvent]) -> [[TimelineEvent]] {
-        var groupedEvents: [[TimelineEvent]] = []
-        var eventsAlreadyGrouped: [Int] = []
-        
-        for event in timelineEvents {
-            if eventsAlreadyGrouped.contains(event.id) { continue }
-            print(eventsAlreadyGrouped.contains(event.id))
-            
-            var group: [TimelineEvent] = [event]
-            eventsAlreadyGrouped.append(event.id)
-            
-            let currentDay = event.date
-            let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: currentDay) ?? Date()
-            let eventsOnSameDay = timelineEvents.filter {
-                $0.id != event.id &&
-                (Calendar.current.isDate($0.date, inSameDayAs: currentDay) || Calendar.current.isDate($0.date, inSameDayAs: nextDay))
-            }
-            group.append(contentsOf: eventsOnSameDay)
-            eventsAlreadyGrouped.append(contentsOf: eventsOnSameDay.map { $0.id })
-            
-            groupedEvents.append(group)
-        }
-        
-        return groupedEvents
-    }
-    
-    
-    private func getXPosition(eventDate: Date) -> CGFloat {
-        let components = Calendar.current.dateComponents([.day], from: cycleStartDate, to: eventDate)
-        let dayDifference = components.day ?? 0
-        
-        return CGFloat(dayDifference) / CGFloat(cycleLength)
-    }
     
     var body: some View {
         VStack() {
             HStack() {
                 Text("Cycle \(cycleNumber)")
                 Spacer()
-                Text("\(formatDate(date: cycleStartDate)) - \(formatDate(date: cycleEndDate))")
+                Text("\(vm.formatDate(date: cycleStartDate)) - \(vm.formatDate(date: cycleEndDate))")
                     .foregroundStyle(Color.gray)
                     .font(.system(size: 15, weight: .light, design: .default))
             }
@@ -96,7 +59,7 @@ struct TimelineCycle: View {
                     
                     
                     let sortedEvents = eventsInCycle.sorted { $0.date < $1.date }
-                    let groupedEvents = groupEvents(timelineEvents: sortedEvents)
+                    let groupedEvents = vm.groupEvents(timelineEvents: sortedEvents)
                     ForEach(groupedEvents.indices, id: \.self) { index in
                         let eventsList = groupedEvents[index]
                         // Stack for the timeline event and the line
@@ -106,7 +69,7 @@ struct TimelineCycle: View {
                             }) {
                                 TimelineEventView(timelineEvent: eventsList.first!)
                                     .position(
-                                        x: (geometry.size.width + 40) * getXPosition(eventDate: eventsList.first!.date),
+                                        x: (geometry.size.width + 40) * vm.getXPosition(eventDate: eventsList.first!.date, cycleStartDate: cycleStartDate, cycleLength: cycleLength),
                                         y: geometry.size.height
                                     )
                             }
@@ -115,30 +78,12 @@ struct TimelineCycle: View {
                         else {
                             TimelineEventMultipleView(timelineEvents: eventsList, selectedEvent: $selectedEvent)
                                 .position(
-                                    x: (geometry.size.width + 40) * getXPosition(eventDate: eventsList.first!.date),
+                                    x: (geometry.size.width + 40) * vm.getXPosition(eventDate: eventsList.first!.date, cycleStartDate: cycleStartDate, cycleLength: cycleLength),
                                     y: geometry.size.height
                                 )
                         }
                         
                     }
-//                    ForEach(sortedEvents.indices, id: \.self) { index in
-//                        let event = sortedEvents[index]
-//                        // Stack for the timeline event and the line
-//                        Button {
-//                            selectedEvent = event
-//                        } label: {
-//                            VStack {
-//                                // If the event is above the timeline, order the event before the rectangle
-//                                TimelineEventView(timelineEvent: event)
-//                                
-//                                    .zIndex(3)
-//                            }
-//                        }.buttonStyle(.plain)
-//                        .position(
-//                            x: (geometry.size.width + 40) * getXPosition(eventDate: event.date),
-//                            y: geometry.size.height
-//                        )
-//                    }
                 }
             }
             .padding(.horizontal, 5)
@@ -154,19 +99,6 @@ struct TimelineCycle: View {
 }
 
 #Preview {
-//    let timelineEvents: [TimelineEvent] = (0...13).map { dayOffset in
-//            TimelineEvent(
-//                id: dayOffset + 1,
-//                eventId: EventID.chemotherapy,
-//                date: Calendar.current.date(
-//                    byAdding: .day,
-//                    value: dayOffset,
-//                    to: Date()
-//                ) ?? Date(),
-//                notes: "",
-//                doctorId: 1
-//            )
-//        }
     let timelineEvents: [TimelineEvent] = [
         TimelineEvent(
             id: 1,

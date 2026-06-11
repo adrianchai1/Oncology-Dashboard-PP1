@@ -71,8 +71,6 @@ private let cycleDurationDays = 14
 
 private func calculatePercentageDifference(currAvg: Double, prevAvg: Double) -> Double {
     // Returns a percentage
-    
-    
     return ((currAvg - prevAvg) / prevAvg) * 100
 }
 

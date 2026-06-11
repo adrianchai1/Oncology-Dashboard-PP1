@@ -179,3 +179,21 @@ private func activeEnergyScore(_ kcal: Double) -> Double {
 private func walkingSpeedScore(_ metresPerSecond: Double) -> Double {
     clamp((metresPerSecond / 1.4) * 100)
 }
+
+func calculateSleepPercentage(from data: [SleepDomain]) -> Double {
+    guard !data.isEmpty else { return 0 }
+    
+    let sleepScorePoints = calculateSleepScorePoints(from: data)
+    
+    let total = sleepScorePoints.reduce(0.0) { $0 + $1.score }
+    return (total / Double(sleepScorePoints.count)).rounded()
+    
+}
+
+
+func calculateMoodPercentage(from moodData: [MoodDomain]) -> Double {
+    guard !moodData.isEmpty else { return 0 }
+    
+    let total = moodData.reduce(0) { $0 + $1.mood }
+    return (Double(total) / Double(moodData.count)).rounded()
+}

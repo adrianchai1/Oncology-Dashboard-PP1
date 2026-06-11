@@ -11,10 +11,10 @@ struct PatientCard: View {
     let patientName: String
     let cycleNumber: Int
     let URNumber: String
-    let sleepPercentage: Double
-    let physiologicalPercentage: Double
-    let activityPercentage: Double
-    let patientReportedPercentage: Double
+    let patientId: Int
+    
+    var vm = PatientCardViewViewModel()
+    
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -28,13 +28,17 @@ struct PatientCard: View {
                     Text(URNumber)
                 }
             }.padding()
-            RingsCard(sleepPercentage: sleepPercentage, physiologicalPercentage: physiologicalPercentage, activityPercentage: activityPercentage, patientReportedPercentage: patientReportedPercentage)
+            RingsCard(sleepPercentage: vm.sleepPercentage, physiologicalPercentage: vm.physiologicalPercentage, activityPercentage: vm.activityPercentage, patientReportedPercentage: vm.moodPercentage)
         }.padding().frame(minHeight: 200).frame(maxWidth: .infinity).background() {
             RoundedRectangle(cornerRadius: 12).fill(.clear).glassEffect(in: .rect(cornerRadius: 12))
         }.clipShape(RoundedRectangle(cornerRadius: 12)).padding()
+            .task {
+                await vm.loadPercentages(patientId: patientId)
+            }
     }
+    
 }
 
 #Preview {
-    PatientCard(patientName: "Tina Dinh", cycleNumber: 4, URNumber: "1003456", sleepPercentage: 34, physiologicalPercentage: 55, activityPercentage: 73, patientReportedPercentage: 42)
+    PatientCard(patientName: "Tina Dinh", cycleNumber: 4, URNumber: "1003456", patientId: 1)
 }

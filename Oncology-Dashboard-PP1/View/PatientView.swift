@@ -31,10 +31,7 @@ struct PatientView: View {
                             patientName: patient.patientName,
                             cycleNumber: patient.cycleCount,
                             URNumber: patient.urn,
-                            sleepPercentage: patient.sleepPercentage,
-                            physiologicalPercentage: patient.physiologicalPercentage,
-                            activityPercentage: patient.activityPercentage,
-                            patientReportedPercentage: patient.patientReportedPercentage
+                            patientId: patient.id
                         )
                         .onTapGesture {
                             selectedPatient = patient

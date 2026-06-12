@@ -23,7 +23,7 @@ struct ChemotherapyEventDTO: Codable {
 class ChemotherapyEventsViewModel {
     var chemotherapyEvents: [ChemotherapyEvent] = []
     func fetchChemotherapyEvents(for patientId: Int) {
-        guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/events/chemotherapy") else {
+        guard let url = URL(string: getApiUrl(endpoint: .getPatientChemotherapyEvents(id: patientId))) else {
             return
         }
 

@@ -14,7 +14,7 @@ import Foundation
 //        print(error)
 //    }
 func fetchPhysiologicalData(for patientId: Int) async throws -> [PhysiologicalDomain] {
-    guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/physiological") else {
+    guard let url = URL(string: getApiUrl(endpoint: .getPatientPhysiologicalData(id: patientId))) else {
         return []
     }
     
@@ -40,7 +40,7 @@ func fetchPhysiologicalData(for patientId: Int) async throws -> [PhysiologicalDo
 }
 
 func fetchActivityData(for patientId: Int) async throws -> [ActivityDomain] {
-    guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/activity") else {
+    guard let url = URL(string: getApiUrl(endpoint: .getPatientActivityData(id: patientId))) else {
         return []
     }
     
@@ -66,7 +66,7 @@ func fetchActivityData(for patientId: Int) async throws -> [ActivityDomain] {
 }
 
 func fetchSleepData(for patientId: Int) async throws -> [SleepDomain] {
-    guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/sleep") else {
+    guard let url = URL(string: getApiUrl(endpoint: .getPatientSleepData(id: patientId))) else {
         return []
     }
 
@@ -96,7 +96,8 @@ func fetchSleepData(for patientId: Int) async throws -> [SleepDomain] {
 
 
 func fetchMoodData(for patientId: Int) async throws -> [MoodDomain] {
-    guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/selfreported") else {
+    print(getApiUrl(endpoint: .getPatientMoodData(id: patientId)))
+    guard let url = URL(string: getApiUrl(endpoint: .getPatientMoodData(id: patientId))) else {
         return []
     }
 

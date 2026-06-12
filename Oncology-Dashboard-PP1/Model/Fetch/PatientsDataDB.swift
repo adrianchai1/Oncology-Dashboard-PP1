@@ -8,9 +8,10 @@
 import Foundation
 
 func fetchPatientsData() async throws -> [Patient] {
-    guard let url = URL(string: "http://170.64.254.24:3001/api/patients") else {
+    guard let url = URL(string: getApiUrl(endpoint: .getAllPatients)) else {
         return []
     }
+    print(getApiUrl(endpoint: .getAllPatients))
 
     let (data, response) = try await URLSession.shared.data(from: url)
 
@@ -43,7 +44,7 @@ func fetchPatientsData() async throws -> [Patient] {
 
 func fetchTimelineEventsData(for patientId: Int) async throws -> [TimelineEvent] {
     guard let url = URL(
-        string: "http://170.64.254.24:3001/api/patients/\(patientId)/events"
+        string: getApiUrl(endpoint: .getPatientEvents(id: patientId))
     ) else {
         throw URLError(.badURL)
     }

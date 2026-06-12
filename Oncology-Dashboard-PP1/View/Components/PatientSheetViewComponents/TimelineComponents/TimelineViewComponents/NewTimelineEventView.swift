@@ -19,26 +19,7 @@ struct NewTimelineEventView: View {
     
     @State var errorMessage: String = ""
     
-    private func validateForm() -> Bool {
-        
-        
-        if selectedEventType == EventID.other.title && title == "" {
-            errorMessage = "Error: Missing event title"
-            return false
-        }
-        
-        let calendar = Calendar.current
-        let startOfToday = calendar.startOfDay(for: Date())
-        let startOfInput = calendar.startOfDay(for: selectedDate)
-    
-        if startOfInput > startOfToday {
-            errorMessage = "Error: Event date cannot be in the future"
-            return false
-        }
-        
-        errorMessage = ""
-        return true
-    }
+    var vm = NewTimelineEventViewViewModel()
     
     var body: some View {
         
@@ -60,13 +41,6 @@ struct NewTimelineEventView: View {
                     }
                 }
                 
-                //            var id: UUID = UUID()
-                //            var eventId: EventID
-                //            var date: Date
-                //            var notes: String
-                //            var doctorId: UUID = UUID()
-                //            var title: String?
-                
                 DatePicker("Select Date",
                            selection: $selectedDate,
                            displayedComponents: .date)
@@ -85,8 +59,9 @@ struct NewTimelineEventView: View {
             }.navigationTitle("New Timeline Event").navigationBarTitleDisplayMode(.inline).toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button() {
-                        let validForm = validateForm()
-                        if validForm {
+                        let validForm = vm.validateForm(selectedEventType: selectedEventType, title: title, selectedDate: selectedDate)
+                        errorMessage = validForm
+                        if validForm == "" {
                             // TODO: SAVE TO DB
                             
                             dismiss()

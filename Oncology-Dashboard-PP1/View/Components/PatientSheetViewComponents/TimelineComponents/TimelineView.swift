@@ -84,11 +84,6 @@ struct TimelineView: View {
                         .padding(.vertical, 50)
                         .padding(.horizontal, 20)
                         .allowsHitTesting(false)
-                    //                 Timeline heatmap bar
-                    //                    .padding(.top, 20)
-                    //                TimelineBar()
-                    //                    .padding(.horizontal, 10)
-                    //                    .zIndex(1)
                 }
             }
             .onAppear {

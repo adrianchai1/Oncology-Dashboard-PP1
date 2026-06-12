@@ -5,50 +5,16 @@
 //  Created by Adrian Chai on 9/6/2026.
 //
 
+// note: references are included in the technical report.
+
 import Foundation
 
-// below is physiological, also note perhaps we should split these up?
-
-func calculatePhysiologicalPercentage(from data: [PhysiologicalDomain]) -> Double {
-    guard !data.isEmpty else { return 0 }
-
-    let groupedByType = Dictionary(grouping: data) { $0.type }
-
-    func average(for type: String) -> Double? {
-        guard let entries = groupedByType[type], !entries.isEmpty else { return nil }
-        let total = entries.reduce(0.0) { $0 + $1.value }
-        return total / Double(entries.count)
-    }
-
-    var scores: [(score: Double, weight: Double)] = []
-
-    if let hrv = average(for: "HKQuantityTypeIdentifierHeartRateVariabilitySDNN") {
-        scores.append((hrvScore(hrv), 0.25))
-    }
-
-    if let restingHR = average(for: "HKQuantityTypeIdentifierRestingHeartRate") {
-        scores.append((restingHeartRateScore(restingHR), 0.25))
-    }
-
-    if let oxygen = average(for: "HKQuantityTypeIdentifierOxygenSaturation") {
-        scores.append((oxygenSaturationScore(oxygen), 0.20))
-    }
-
-    if let respiratoryRate = average(for: "HKQuantityTypeIdentifierRespiratoryRate") {
-        scores.append((respiratoryRateScore(respiratoryRate), 0.20))
-    }
-
-    if let walkingHR = average(for: "HKQuantityTypeIdentifierWalkingHeartRateAverage") {
-        scores.append((walkingHeartRateScore(walkingHR), 0.10))
-    }
-
-    guard !scores.isEmpty else { return 0 }
-
-    let weightedTotal = scores.reduce(0.0) { $0 + ($1.score * $1.weight) }
-    let totalWeight = scores.reduce(0.0) { $0 + $1.weight }
-
-    return (weightedTotal / totalWeight).rounded()
+// this one is used for ensuring the values respect the ranges of the radar graph
+private func clamp(_ value: Double) -> Double {
+    min(max(value, 0), 100)
 }
+
+// below is physiological, also note perhaps we should split these up?
 
 private func hrvScore(_ hrv: Double) -> Double {
     clamp((hrv / 100.0) * 100)
@@ -102,11 +68,72 @@ private func walkingHeartRateScore(_ bpm: Double) -> Double {
     }
 }
 
-private func clamp(_ value: Double) -> Double {
-    min(max(value, 0), 100)
+func calculatePhysiologicalPercentage(from data: [PhysiologicalDomain]) -> Double {
+    guard !data.isEmpty else { return 0 }
+
+    let groupedByType = Dictionary(grouping: data) { $0.type }
+
+    func average(for type: String) -> Double? {
+        guard let entries = groupedByType[type], !entries.isEmpty else { return nil }
+        let total = entries.reduce(0.0) { $0 + $1.value }
+        return total / Double(entries.count)
+    }
+
+    var scores: [(score: Double, weight: Double)] = []
+
+    if let hrv = average(for: "HKQuantityTypeIdentifierHeartRateVariabilitySDNN") {
+        scores.append((hrvScore(hrv), 0.25))
+    }
+
+    if let restingHR = average(for: "HKQuantityTypeIdentifierRestingHeartRate") {
+        scores.append((restingHeartRateScore(restingHR), 0.25))
+    }
+
+    if let oxygen = average(for: "HKQuantityTypeIdentifierOxygenSaturation") {
+        scores.append((oxygenSaturationScore(oxygen), 0.20))
+    }
+
+    if let respiratoryRate = average(for: "HKQuantityTypeIdentifierRespiratoryRate") {
+        scores.append((respiratoryRateScore(respiratoryRate), 0.20))
+    }
+
+    if let walkingHR = average(for: "HKQuantityTypeIdentifierWalkingHeartRateAverage") {
+        scores.append((walkingHeartRateScore(walkingHR), 0.10))
+    }
+
+    guard !scores.isEmpty else { return 0 }
+
+    let weightedTotal = scores.reduce(0.0) { $0 + ($1.score * $1.weight) }
+    let totalWeight = scores.reduce(0.0) { $0 + $1.weight }
+
+    return (weightedTotal / totalWeight).rounded()
 }
 
 // below is activity
+
+private func stepCountScore(_ steps: Double) -> Double {
+    clamp((steps / 10000.0) * 100)
+}
+
+private func exerciseTimeScore(_ minutes: Double) -> Double {
+    clamp((minutes / 30.0) * 100)
+}
+
+private func distanceScore(_ metres: Double) -> Double {
+    clamp((metres / 8000.0) * 100)
+}
+
+private func flightsClimbedScore(_ flights: Double) -> Double {
+    clamp((flights / 10.0) * 100)
+}
+
+private func activeEnergyScore(_ kcal: Double) -> Double {
+    clamp((kcal / 500.0) * 100)
+}
+
+private func walkingSpeedScore(_ metresPerSecond: Double) -> Double {
+    clamp((metresPerSecond / 1.4) * 100)
+}
 
 func calculateActivityPercentage(from data: [ActivityDomain]) -> Double {
     guard !data.isEmpty else { return 0 }
@@ -156,30 +183,6 @@ func calculateActivityPercentage(from data: [ActivityDomain]) -> Double {
     return (weightedTotal / totalWeight).rounded()
 }
 
-private func stepCountScore(_ steps: Double) -> Double {
-    clamp((steps / 10000.0) * 100)
-}
-
-private func exerciseTimeScore(_ minutes: Double) -> Double {
-    clamp((minutes / 30.0) * 100)
-}
-
-private func distanceScore(_ metres: Double) -> Double {
-    clamp((metres / 8000.0) * 100)
-}
-
-private func flightsClimbedScore(_ flights: Double) -> Double {
-    clamp((flights / 10.0) * 100)
-}
-
-private func activeEnergyScore(_ kcal: Double) -> Double {
-    clamp((kcal / 500.0) * 100)
-}
-
-private func walkingSpeedScore(_ metresPerSecond: Double) -> Double {
-    clamp((metresPerSecond / 1.4) * 100)
-}
-
 func calculateSleepPercentage(from data: [SleepDomain]) -> Double {
     guard !data.isEmpty else { return 0 }
     
@@ -189,7 +192,6 @@ func calculateSleepPercentage(from data: [SleepDomain]) -> Double {
     return (total / Double(sleepScorePoints.count)).rounded()
     
 }
-
 
 func calculateMoodPercentage(from moodData: [MoodDomain]) -> Double {
     guard !moodData.isEmpty else { return 0 }

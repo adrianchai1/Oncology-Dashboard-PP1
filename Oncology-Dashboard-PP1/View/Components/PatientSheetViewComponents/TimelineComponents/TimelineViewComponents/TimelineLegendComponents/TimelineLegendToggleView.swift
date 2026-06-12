@@ -33,9 +33,6 @@ struct TimelineLegendToggleView: View {
                         Circle()
                             .frame(width: 10)
                             .foregroundStyle(selected ? color : Color.clear)
-//                        Image(systemName: "checkmark")
-//                            .font(.system(size: 12, weight: .bold))
-//                            .foregroundStyle(.white)
                     }
                 }
                 

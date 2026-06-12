@@ -204,7 +204,7 @@ class TimelineViewViewModel {
     }
 
     func fetchPatientPercentages(for patientId: Int) {
-        guard let url = URL(string: "http://170.64.254.24:3001/api/patients/\(patientId)/percentages") else {
+        guard let url = URL(string: getApiUrl(endpoint: .getPatientPercentages(id: patientId))) else {
             return
         }
 

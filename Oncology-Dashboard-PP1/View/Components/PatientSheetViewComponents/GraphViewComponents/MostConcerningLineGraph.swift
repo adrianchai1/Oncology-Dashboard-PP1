@@ -41,6 +41,7 @@ struct MostConcerningLineGraph: View {
                     .font(.system(size: 16, weight: .bold))
             }
         }
+
     }
 }
 

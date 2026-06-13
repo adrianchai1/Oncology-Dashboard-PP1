@@ -46,15 +46,36 @@ struct CycleBreakdownView: View {
                 else {
                     HStack(spacing: 20) {
                         VStack {
-                            Text("Most Concerning Metrics:")
+                            Text("Most Notable Metrics:")
                             MostConcerningLineGraph(mostConcerningMetrics: vm?.mostConcerningMetrics ?? [])
                         }
+                        
+                        .padding()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .background(.ultraThinMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(.white.opacity(0.25), lineWidth: 1)
+                        }
+                        .shadow(radius: 12)
+                        .padding()
+                        
                         Spacer()
                         
                         VStack {
                             Text("Sleep Score: (%)")
                             GeneralLineGraph(dataPoints: vm?.sleepDataPoints ?? [], color: .sleep)
+                            
                         }
+                        .padding()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .background(.ultraThinMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(.white.opacity(0.25), lineWidth: 1)
+                        }
+                        .shadow(radius: 12)
+                        .padding()
                     }
                     .frame(height: 300)
                     .padding(.horizontal)

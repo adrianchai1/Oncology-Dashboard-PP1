@@ -12,8 +12,19 @@ struct PatientCard: View {
     let cycleNumber: Int
     let URNumber: String
     let patientId: Int
+    let latestCycleStartDate: Date
+    @State var vm: PatientCardViewViewModel
     
-    var vm = PatientCardViewViewModel()
+    init(patientName: String, cycleNumber: Int, URNumber: String, patientId: Int, latestCycleStartDate: Date) {
+        self.patientName = patientName
+        self.cycleNumber = cycleNumber
+        self.URNumber = URNumber
+        self.patientId = patientId
+        self.latestCycleStartDate = latestCycleStartDate
+        _vm = State(initialValue: PatientCardViewViewModel(
+            latestCycleStartDate: latestCycleStartDate
+        ))
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -40,5 +51,5 @@ struct PatientCard: View {
 }
 
 #Preview {
-    PatientCard(patientName: "Tina Dinh", cycleNumber: 4, URNumber: "1003456", patientId: 1)
+    PatientCard(patientName: "Tina Dinh", cycleNumber: 4, URNumber: "1003456", patientId: 1, latestCycleStartDate: Date())
 }

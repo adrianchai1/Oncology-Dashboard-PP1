@@ -202,19 +202,16 @@ class CycleBreakdownViewViewModel {
     }
     
     private func getSleepData(patientId: Int) async throws -> [LinePoint] {
-        // TODO: PULL FROM DATA
-        return [
-            LinePoint(date: Date().addingTimeInterval(-86400 * 9), value: 10),
-            LinePoint(date: Date().addingTimeInterval(-86400 * 8), value: 15),
-            LinePoint(date: Date().addingTimeInterval(-86400 * 7), value: 12),
-            LinePoint(date: Date().addingTimeInterval(-86400 * 6), value: 13),
-            LinePoint(date: Date().addingTimeInterval(-86400 * 5), value: 30),
-            LinePoint(date: Date().addingTimeInterval(-86400 * 4), value: 5),
-            LinePoint(date: Date().addingTimeInterval(-86400 * 3), value: -10),
-            LinePoint(date: Date().addingTimeInterval(-86400 * 2), value: -30),
-            LinePoint(date: Date().addingTimeInterval(-86400 * 1), value: -20),
-            LinePoint(date: Date(), value: -15)
-        ]
+        
+        let sleepDomain = try await fetchSleepData(for: patientId).filter({ $0.startDate >= cycleStartDate && $0.endDate <= cycleEndDate})
+        let sleepData = calculateSleepScorePoints(from: sleepDomain)
+        let linePoints = sleepData.map { entry in
+                LinePoint(
+                    date: entry.date,
+                    value: entry.score
+                )
+            }
+        return linePoints
     }
     
     func initCycleData(patientId: Int) async throws {

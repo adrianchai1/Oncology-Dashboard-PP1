@@ -31,7 +31,12 @@ struct PatientView: View {
                             patientName: patient.patientName,
                             cycleNumber: patient.cycleCount,
                             URNumber: patient.urn,
-                            patientId: patient.id
+                            patientId: patient.id,
+                            latestCycleStartDate: Calendar.current.date(
+                                byAdding: .day,
+                                value: (patient.cycleCount * 14) - 13,
+                                to: patient.treatmentStartDate
+                            ) ?? Date()
                         )
                         .onTapGesture {
                             selectedPatient = patient

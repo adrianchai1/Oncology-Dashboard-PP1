@@ -15,17 +15,25 @@ class PatientCardViewViewModel {
     var moodPercentage: Double = 0.0
     var physiologicalPercentage: Double = 0.0
     
+    var latestCycleStartDate: Date
+    
     private var patientSleepData: [SleepDomain] = []
     private var patientActivityData: [ActivityDomain] = []
     private var patientMoodData: [MoodDomain] = []
     private var patientPhysiologicalData: [PhysiologicalDomain] = []
     
+    init (latestCycleStartDate: Date) {
+        self.latestCycleStartDate = latestCycleStartDate
+    }
+    
     func loadPercentages(patientId: Int) async {
         do {
-            patientMoodData = try await fetchMoodData(for: patientId)
-            patientSleepData = try await fetchSleepData(for: patientId)
-            patientActivityData = try await fetchActivityData(for: patientId)
-            patientPhysiologicalData = try await fetchPhysiologicalData(for: patientId)
+            patientMoodData = try await fetchMoodData(for: patientId).filter({$0.date > self.latestCycleStartDate})
+            patientSleepData = try await fetchSleepData(for: patientId).filter({$0.startDate > self.latestCycleStartDate})
+            patientActivityData = try await fetchActivityData(for: patientId).filter({$0.date > self.latestCycleStartDate})
+            patientPhysiologicalData = try await fetchPhysiologicalData(for: patientId).filter({$0.date > self.latestCycleStartDate})
+            print(self.latestCycleStartDate)
+            print(patientPhysiologicalData)
             
             physiologicalPercentage = calculatePhysiologicalPercentage(from: patientPhysiologicalData)
             activityPercentage = calculateActivityPercentage(from: patientActivityData)
